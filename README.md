@@ -4,17 +4,17 @@ Graphy is a Javascript canvas based graphing library for manipulating mathematic
 
 ## Install
 
-The recommended way to install Graphy is
+TODO
 
 ## Usage
 
+TODO
 
 ## Build
 
 `npm run build`
 
 Contains `flow` and `eslint`
-
 
 ## License
 
