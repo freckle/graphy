@@ -1,0 +1,4 @@
+{
+  "presets": [ "stage-2", "react", "es2015" ],
+  "plugins": ["transform-class-properties", "transform-flow-strip-types"]
+}
