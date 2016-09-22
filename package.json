@@ -1,7 +1,11 @@
 {
   "name": "graphy",
   "version": "0.1.0",
-  "private": true,
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/frontrowed/graphy.git"
+  },
   "devDependencies": {
     "babel-eslint": "^6.1.2",
     "babel-plugin-transform-class-properties": "^6.8.0",
@@ -20,11 +24,10 @@
   "dependencies": {
     "lodash": "^4.15.0",
     "paper": "^0.10.2",
-    "react": "^15.3.1",
-    "react-dom": "^15.3.1"
+    "react": "^15.3.1"
   },
   "scripts": {
-    "bundle": "browserify src/index.js -t babelify --outfile lib/graphy.js",
+    "bundle": "browserify src/index.js -t babelify --outfile index.js",
     "build": "npm run lint && npm run flow && npm run bundle",
     "flow": "flow",
     "lint": "eslint src/**/*.js"
