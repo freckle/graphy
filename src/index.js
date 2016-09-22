@@ -3,8 +3,8 @@
 import React from 'react'
 import _ from 'lodash'
 
-import GraphUtil from './../helpers/graph-util.js'
-import type {GraphSettingsT, PointT, GraphTypeT, GraphPropertiesT} from './../helpers/graph-util.js'
+import GraphUtil from './helpers/graph-util.js'
+import type {GraphSettingsT, PointT, GraphTypeT, GraphPropertiesT} from './helpers/graph-util.js'
 
 const minGridX = -10
 const maxGridX = 10

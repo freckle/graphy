@@ -10,6 +10,8 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-preset-stage-2": "^6.5.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
     "eslint": "^3.2.2",
     "eslint-plugin-flowtype": "^2.17.1",
     "eslint-plugin-react": "^6.0.0",
@@ -22,8 +24,17 @@
     "react-dom": "^15.3.1"
   },
   "scripts": {
-    "build": "npm run eslint && npm run flow",
+    "bundle": "browserify src/index.js -t babelify --outfile lib/graphy.js",
+    "build": "npm run lint && npm run flow && npm run bundle",
     "flow": "flow",
-    "eslint": "eslint src/**/*.js"
-  }
+    "lint": "eslint src/**/*.js"
+  },
+  "transform": [
+    [
+      "babelify",
+      {
+        "comments": false
+      }
+    ]
+  ]
 }
