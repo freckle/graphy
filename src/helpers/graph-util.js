@@ -76,7 +76,7 @@ export type GraphPropertiesT =
   , property: GraphPropertyT
   }
 
-export const getClosestStepPoint = function(point: PointT, graphSettings: GraphSettingsT): PointT {
+export function getClosestStepPoint(point: PointT, graphSettings: GraphSettingsT): PointT {
   const {stepX, stepY} = graphSettings
   return (
     { x: Math.ceil(point.x/stepX) * stepX

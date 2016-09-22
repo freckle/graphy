@@ -88,7 +88,7 @@ const getExponentialFunction = function(asymptoteY: number, point1: PointT, poin
   return (x: number) => a * Math.pow(b, x) + c
 }
 
-export default
+export
   { isPointBelowFunction
   , isPointCloseToFunction
   , getLinearFunction

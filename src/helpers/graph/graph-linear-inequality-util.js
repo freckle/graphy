@@ -3,7 +3,7 @@
 import {getClosestStepPoint} from './../graph-util.js'
 import type {GraphSettingsT, PointT, GraphPropertiesT, SideT, DottingT} from './../graph-util.js'
 
-const GraphLinearUtil = {
+const GraphLinearInequalityUtil = {
 
   createGraph: function(graph: any, onPointChanged: (movingPoint: ?PointT, graphProperties: GraphPropertiesT) => void, graphSettings: GraphSettingsT) {
 
@@ -48,4 +48,4 @@ const GraphLinearUtil = {
     graph.linearEquationInequality.setDraggable(onMouseDown, onMouseMove, onMouseUp)
   }
 }
-export default GraphLinearUtil
+export default GraphLinearInequalityUtil

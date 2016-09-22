@@ -3,7 +3,13 @@
 import paper from 'paper'
 import _ from 'lodash'
 
-import GraphEquation from './../logic/graph-equations.js'
+import
+  { isPointBelowFunction
+  , isPointCloseToFunction
+  , getLinearFunction
+  , getQuadraticFunction
+  , getExponentialFunction
+  } from './../logic/graph-equations.js'
 import type {GraphSettingsT, PointT, SideT, DottingT} from './../helpers/graph-util.js'
 
 const itemsAtPoint = function(point: PointT, groups: Array<any>): boolean {
@@ -149,7 +155,7 @@ const PaperUtil = {
       updateFunction: () => {
         this.groups['curve'].removeChildren()
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
-        const fn = GraphEquation.getLinearFunction(gridPoint1, gridPoint2)
+        const fn = getLinearFunction(gridPoint1, gridPoint2)
         const {minGridX, maxGridX, stepX} = graphSettings
         this.traceCurveByFunction('curve', fn, minGridX, maxGridX, stepX, 'blue')
       },
@@ -196,7 +202,7 @@ const PaperUtil = {
       updateFunction: () => {
         this.groups['curve'].removeChildren()
         const {vertex, point} = this.quadraticEquation.getVertexAndPoint()
-        const fn = GraphEquation.getQuadraticFunction(vertex, point)
+        const fn = getQuadraticFunction(vertex, point)
         const {minGridX, maxGridX, stepX} = graphSettings
         this.traceCurveByFunction('curve', fn, minGridX, maxGridX, stepX, 'blue')
       },
@@ -251,7 +257,7 @@ const PaperUtil = {
       updateFunction: () => {
         this.groups['curve'].removeChildren()
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
-        const exponentialFunction = GraphEquation.getExponentialFunction(0, gridPoint1, gridPoint2)
+        const exponentialFunction = getExponentialFunction(0, gridPoint1, gridPoint2)
         const {minGridX, maxGridX, stepX} = graphSettings
         this.traceCurveByFunction('curve', exponentialFunction, minGridX, maxGridX, stepX, 'blue')
       },
@@ -353,7 +359,7 @@ const PaperUtil = {
       updateFunction: () => {
         this.groups['curve'].removeChildren()
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
-        const fn = GraphEquation.getLinearFunction(gridPoint1, gridPoint2)
+        const fn = getLinearFunction(gridPoint1, gridPoint2)
         const {minGridX, maxGridX, stepX} = graphSettings
         const isDashed = this.linearEquationInequality.dotting === "dotted"
         this.traceCurveByFunction('curve', fn, minGridX, maxGridX, stepX, 'blue', isDashed)
@@ -363,7 +369,7 @@ const PaperUtil = {
       updateInequalitySide: (side: SideT) => {
         this.groups['inequality-side'].removeChildren()
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
-        const fn = GraphEquation.getLinearFunction(gridPoint1, gridPoint2)
+        const fn = getLinearFunction(gridPoint1, gridPoint2)
         const {minGridX, minGridY, maxGridX, maxGridY} = graphSettings
 
         const [gridPointEnd1, gridPointEnd2] =
@@ -404,18 +410,18 @@ const PaperUtil = {
         const item = pickClosestItem(paperPoint, [this.groups['points']])
 
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
-        const fn = GraphEquation.getLinearFunction(gridPoint1, gridPoint2)
+        const fn = getLinearFunction(gridPoint1, gridPoint2)
 
         if (item) {
           // User click next to a point
           this.draggedItem = item
-        } else if (GraphEquation.isPointCloseToFunction(fn, point, graphSettings.stepY)) {
+        } else if (isPointCloseToFunction(fn, point, graphSettings.stepY)) {
           // Clicking on function
           const dotting = this.linearEquationInequality.dotting === "dotted" ? "plain" : "dotted"
           this.linearEquationInequality.setDotting(dotting)
           this.linearEquationInequality.updateFunction()
         } else {
-          const clickedLessThan = GraphEquation.isPointBelowFunction(fn, point)
+          const clickedLessThan = isPointBelowFunction(fn, point)
           const side = clickedLessThan ? "lessThan" : "greaterThan"
           this.linearEquationInequality.setSide(side)
           this.linearEquationInequality.updateFunction()
