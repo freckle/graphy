@@ -6,14 +6,14 @@ import _ from 'lodash'
 import GraphUtil from './helpers/graph-util.js'
 import type {GraphSettingsT, PointT, GraphTypeT, GraphPropertiesT} from './helpers/graph-util.js'
 
-const minGridX = -10
-const maxGridX = 10
-const minGridY = -10
-const maxGridY = 10
-const stepX = 1
-const stepY = 1
-const pointRadius = 5
-const pointColors =
+const defaultMinGridX = -10
+const defaultMaxGridX = 10
+const defaultMinGridY = -10
+const defaultMaxGridY = 10
+const defaultStepX = 1
+const defaultStepY = 1
+const defaultPointRadius = 5
+const defaultPointColors =
   [ '#35605A'
   , '#FF9F1C'
   , '#4357AD'
@@ -21,24 +21,41 @@ const pointColors =
   , '#643173'
   ]
 
-const baseGraphSettings =
-  { minGridX
-  , maxGridX
-  , minGridY
-  , maxGridY
-  , stepX
-  , stepY
-  , pointRadius
-  , pointColors
-  }
-
 type GrapherProps =
   { onPointChanged: (movingPoint: ?PointT, graphProperties: GraphPropertiesT) => void
   , graphType: GraphTypeT
+  , minGridX?: number
+  , maxGridX?: number
+  , minGridY?: number
+  , maxGridY?: number
+  , stepX?: number
+  , stepY?: number
+  , pointRadius?: number
+  , pointColors?: Array<string>
   }
 
-const getGraphSetting = function(graphType: GraphTypeT): GraphSettingsT {
-  switch (graphType) {
+const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
+  const minGridX = grapherProps.minGridX ? grapherProps.minGridX: defaultMinGridX
+  const maxGridX = grapherProps.maxGridX ? grapherProps.maxGridX : defaultMaxGridX
+  const minGridY = grapherProps.minGridY ? grapherProps.minGridY : defaultMinGridY
+  const maxGridY = grapherProps.maxGridY ? grapherProps.maxGridY : defaultMaxGridY
+  const stepX = grapherProps.stepX ? grapherProps.stepX : defaultStepX
+  const stepY = grapherProps.stepY ? grapherProps.stepY : defaultStepY
+  const pointRadius = grapherProps.pointRadius ? grapherProps.pointRadius : defaultPointRadius
+  const pointColors = grapherProps.pointColors ? grapherProps.pointColors : defaultPointColors
+
+  const baseGraphSettings =
+    { minGridX
+    , maxGridX
+    , minGridY
+    , maxGridY
+    , stepX
+    , stepY
+    , pointRadius
+    , pointColors
+    }
+
+  switch (grapherProps.graphType) {
     case 'linear': {
       const startingPoints =
         [ { x: -1, y: -1}
@@ -80,7 +97,7 @@ const getGraphSetting = function(graphType: GraphTypeT): GraphSettingsT {
       return _.extend({}, baseGraphSettings, {startingPoints})
     }
     default:
-      throw new Error (`Could not recognize graph type: ${graphType}`)
+      throw new Error (`Could not recognize graph type: ${grapherProps.graphType}`)
   }
 }
 
@@ -91,7 +108,7 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
 
   componentDidMount() {
     const canvas = document.getElementById(`graph-${this.props.graphType}-canvas`)
-    const graphSettings = getGraphSetting(this.props.graphType)
+    const graphSettings = getGraphSetting(this.props)
 
     GraphUtil.setupGraph(this.props.graphType, canvas, this.props.onPointChanged, graphSettings)
   }
@@ -107,3 +124,7 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
     )
   }
 }
+
+export type {PointT}
+export type {GraphTypeT}
+export type {GraphPropertiesT}
