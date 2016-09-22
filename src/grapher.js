@@ -99,7 +99,10 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
   render() {
 
     return (
-      <canvas id={`graph-${this.props.graphType}-canvas`}>
+      <canvas
+        id={`graph-${this.props.graphType}-canvas`}
+        className="graph-canvas"
+      >
       </canvas>
     )
   }
