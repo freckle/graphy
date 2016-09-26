@@ -12,7 +12,7 @@ const defaultMinGridY = -10
 const defaultMaxGridY = 10
 const defaultStepX = 1
 const defaultStepY = 1
-const defaultPointRadius = 5
+const defaultPointSize = 5
 const defaultPointColors =
   [ '#35605A'
   , '#FF9F1C'
@@ -30,7 +30,7 @@ type GrapherProps =
   , maxGridY?: number
   , stepX?: number
   , stepY?: number
-  , pointRadius?: number
+  , pointSize?: number
   , pointColors?: Array<string>
   }
 
@@ -41,8 +41,11 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
   const maxGridY = grapherProps.maxGridY ? grapherProps.maxGridY : defaultMaxGridY
   const stepX = grapherProps.stepX ? grapherProps.stepX : defaultStepX
   const stepY = grapherProps.stepY ? grapherProps.stepY : defaultStepY
-  const pointRadius = grapherProps.pointRadius ? grapherProps.pointRadius : defaultPointRadius
-  const pointColors = grapherProps.pointColors ? grapherProps.pointColors : defaultPointColors
+  const pointSize = grapherProps.pointSize ? grapherProps.pointSize : defaultPointSize
+  const pointColors =
+    grapherProps.pointColors && !_.isEmpty(grapherProps.pointColors) ?
+      grapherProps.pointColors :
+      defaultPointColors
 
   const baseGraphSettings =
     { minGridX
@@ -51,7 +54,7 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
     , maxGridY
     , stepX
     , stepY
-    , pointRadius
+    , pointSize
     , pointColors
     }
 

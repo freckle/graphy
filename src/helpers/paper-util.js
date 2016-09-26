@@ -27,7 +27,7 @@ const itemsAtPoint = function(point: PointT, groups: Array<any>): boolean {
 
 const pickClosestItem = function(point: PointT, groups: Array<any>): ?mixed {
   const items = itemsAtPoint(point, groups)
-  const itemsByDistance = _.sortBy(items, item => item.position.getDistance(point))
+  const itemsByDistance = _.sortBy(items, item => item.position.getDistance(point, true))
   return _.first(itemsByDistance)
 }
 
@@ -87,12 +87,7 @@ const PaperUtil = {
 
       // Move View to be centered on 0,0
       paper.view.transform(new paper.Matrix(1,0,0,-1,paper.view.center.x, paper.view.center.y))
-      // Move View to be centered the correct quadrant system
 
-      // const viewSize = paper.view.size
-      // const transX = minGridX * (maxGridX - ) * viewSize.width / (maxGridX - minGridX)
-      // const transY = minGridY * viewSize.width / (maxGridX - minGridX)
-      // paper.view.transform(new paper.Matrix(1,0,0,-1,transX, transY))
       this.groups = {}
       this.groups['grid'] = new paper.Group()
       this.groups['points'] = new paper.Group()
@@ -128,7 +123,7 @@ const PaperUtil = {
       this.groups[group].addChild(circle)
     }
 
-    this.traceCurveByFunction = (group: GroupKeyT, fn: ((x: number) => number), minXGridPoint: number, maxXGridPoint: number, stepGridX: number, color: string, isDashed: boolean = false) => {
+    this.traceCurve = (group: GroupKeyT, fn: ((x: number) => number), minXGridPoint: number, maxXGridPoint: number, stepGridX: number, color: string, isDashed: boolean = false) => {
       const gridRangePoints = _.range(minXGridPoint, maxXGridPoint + stepGridX, stepGridX)
       const paperPoints = _.map(gridRangePoints, x => this.fromGridCoordinateToView({x, y: fn(x)}))
       const path = new paper.Path(paperPoints)
@@ -157,7 +152,7 @@ const PaperUtil = {
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
         const fn = getLinearFunction(gridPoint1, gridPoint2)
         const {minGridX, maxGridX, stepX} = graphSettings
-        this.traceCurveByFunction('curve', fn, minGridX, maxGridX, stepX, 'blue')
+        this.traceCurve('curve', fn, minGridX, maxGridX, stepX, 'blue')
       },
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
@@ -190,7 +185,7 @@ const PaperUtil = {
         return false
       },
 
-      stopDraggigItem: () => {
+      stopDraggingItem: () => {
         if (this.draggedItem) {
           this.draggedItem = null
         }
@@ -204,7 +199,7 @@ const PaperUtil = {
         const {vertex, point} = this.quadraticEquation.getVertexAndPoint()
         const fn = getQuadraticFunction(vertex, point)
         const {minGridX, maxGridX, stepX} = graphSettings
-        this.traceCurveByFunction('curve', fn, minGridX, maxGridX, stepX, 'blue')
+        this.traceCurve('curve', fn, minGridX, maxGridX, stepX, 'blue')
       },
 
       getVertexAndPoint: () => {
@@ -245,7 +240,7 @@ const PaperUtil = {
         return false
       },
 
-      stopDraggigItem: () => {
+      stopDraggingItem: () => {
         if (this.draggedItem) {
           this.draggedItem = null
         }
@@ -259,7 +254,7 @@ const PaperUtil = {
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
         const exponentialFunction = getExponentialFunction(0, gridPoint1, gridPoint2)
         const {minGridX, maxGridX, stepX} = graphSettings
-        this.traceCurveByFunction('curve', exponentialFunction, minGridX, maxGridX, stepX, 'blue')
+        this.traceCurve('curve', exponentialFunction, minGridX, maxGridX, stepX, 'blue')
       },
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
@@ -288,9 +283,11 @@ const PaperUtil = {
           const paperPoint = this.fromGridCoordinateToView(point)
           this.draggedItem.position = paperPoint
 
+          // When one of the point of an exponential function crosses the x axis
+          // we move the other point to its inverse (x0,y0) => (x0,-y0)
+          // This behavior is to prevent moving points to impossible exponential functions
           const otherItem = _.filter(this.groups['points'].children, item => item !== this.draggedItem)[0]
           if ((otherItem.position.y > 0 && paperPoint.y < 0) || (otherItem.position.y < 0 && paperPoint.y > 0)) {
-
             otherItem.position = new paper.Point({x: otherItem.position.x, y: -otherItem.position.y})
           }
           return true
@@ -298,7 +295,7 @@ const PaperUtil = {
         return false
       },
 
-      stopDraggigItem: () => {
+      stopDraggingItem: () => {
         if (this.draggedItem) {
           this.draggedItem = null
         }
@@ -337,7 +334,7 @@ const PaperUtil = {
         return false
       },
 
-      stopDraggigItem: () => {
+      stopDraggingItem: () => {
         if (this.draggedItem) {
           this.draggedItem = null
         }
@@ -362,7 +359,7 @@ const PaperUtil = {
         const fn = getLinearFunction(gridPoint1, gridPoint2)
         const {minGridX, maxGridX, stepX} = graphSettings
         const isDashed = this.linearEquationInequality.dotting === "dotted"
-        this.traceCurveByFunction('curve', fn, minGridX, maxGridX, stepX, 'blue', isDashed)
+        this.traceCurve('curve', fn, minGridX, maxGridX, stepX, 'blue', isDashed)
         this.linearEquationInequality.updateInequalitySide(this.linearEquationInequality.side)
       },
 
@@ -437,7 +434,7 @@ const PaperUtil = {
         return false
       },
 
-      stopDraggigItem: () => {
+      stopDraggingItem: () => {
         if (this.draggedItem) {
           this.draggedItem = null
         }

@@ -1,14 +1,16 @@
 /* @flow */
 
 import {getClosestStepPoint} from './../graph-util.js'
+import {getArrayOfNElements} from './../array-helper.js'
 import type {GraphSettingsT, PointT, GraphPropertiesT} from './../graph-util.js'
 
 const GraphExponentialUtil = {
 
   createGraph: function(graph: any, onPointChanged: (movingPoint: ?PointT, graphProperties: GraphPropertiesT) => void, graphSettings: GraphSettingsT) {
 
-    graph.createCircle('points', graphSettings.startingPoints[0], graphSettings.pointRadius, graphSettings.pointColors[0])
-    graph.createCircle('points', graphSettings.startingPoints[1], graphSettings.pointRadius, graphSettings.pointColors[1])
+    const [point1Color, point2Color] = getArrayOfNElements(graphSettings.pointColors, 2)
+    graph.createCircle('points', graphSettings.startingPoints[0], graphSettings.pointSize, point1Color)
+    graph.createCircle('points', graphSettings.startingPoints[1], graphSettings.pointSize, point2Color)
 
     graph.exponentialEquation.updateFunction()
 
@@ -34,7 +36,7 @@ const GraphExponentialUtil = {
     }
     const onMouseUp = function(point: PointT, points: Array<PointT>) {
       moveAndUpdate(point, points)
-      graph.exponentialEquation.stopDraggigItem()
+      graph.exponentialEquation.stopDraggingItem()
     }
 
     graph.exponentialEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp)

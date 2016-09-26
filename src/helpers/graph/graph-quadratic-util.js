@@ -1,14 +1,16 @@
 /* @flow */
 
 import {getClosestStepPoint} from './../graph-util.js'
+import {getArrayOfNElements} from './../array-helper.js'
 import type {GraphSettingsT, PointT, GraphPropertiesT, QuadraticGraphPropertyT} from './../graph-util.js'
 
 const GraphQuadraticUtil = {
 
   createGraph: function(graph: any, onPointChanged: (movingPoint: ?PointT, graphProperties: GraphPropertiesT) => void, graphSettings: GraphSettingsT) {
 
-    graph.createCircle('vertex', graphSettings.startingPoints[0], graphSettings.pointRadius, graphSettings.pointColors[0])
-    graph.createCircle('point', graphSettings.startingPoints[1], graphSettings.pointRadius, graphSettings.pointColors[1])
+    const [vertexColor, pointColor] = getArrayOfNElements(graphSettings.pointColors, 2)
+    graph.createCircle('vertex', graphSettings.startingPoints[0], graphSettings.pointSize, vertexColor)
+    graph.createCircle('point', graphSettings.startingPoints[1], graphSettings.pointSize, pointColor)
 
     graph.quadraticEquation.updateFunction()
 
@@ -37,7 +39,7 @@ const GraphQuadraticUtil = {
     }
     const onMouseUp = function(point: PointT, points: QuadraticGraphPropertyT) {
       moveAndUpdate(point, points)
-      graph.quadraticEquation.stopDraggigItem()
+      graph.quadraticEquation.stopDraggingItem()
     }
 
     graph.quadraticEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp)

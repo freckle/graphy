@@ -39,7 +39,7 @@ export type GraphSettingsT =
   , stepY: number
   , startingPoints: Array<PointT>
   , pointColors: Array<string>
-  , pointRadius: number
+  , pointSize: number
   , side?: SideT
   , dotting?: DottingT
   }

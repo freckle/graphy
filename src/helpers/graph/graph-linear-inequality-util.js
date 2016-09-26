@@ -1,14 +1,16 @@
 /* @flow */
 
 import {getClosestStepPoint} from './../graph-util.js'
+import {getArrayOfNElements} from './../array-helper.js'
 import type {GraphSettingsT, PointT, GraphPropertiesT, SideT, DottingT} from './../graph-util.js'
 
 const GraphLinearInequalityUtil = {
 
   createGraph: function(graph: any, onPointChanged: (movingPoint: ?PointT, graphProperties: GraphPropertiesT) => void, graphSettings: GraphSettingsT) {
 
-    graph.createCircle('points', graphSettings.startingPoints[0], graphSettings.pointRadius, graphSettings.pointColors[0])
-    graph.createCircle('points', graphSettings.startingPoints[1], graphSettings.pointRadius, graphSettings.pointColors[1])
+    const [point1Color, point2Color] = getArrayOfNElements(graphSettings.pointColors, 2)
+    graph.createCircle('points', graphSettings.startingPoints[0], graphSettings.pointSize, point1Color)
+    graph.createCircle('points', graphSettings.startingPoints[1], graphSettings.pointSize, point2Color)
 
     graph.linearEquationInequality.setSide(graphSettings.side)
     graph.linearEquationInequality.setDotting(graphSettings.dotting)
@@ -42,7 +44,7 @@ const GraphLinearInequalityUtil = {
 
     const onMouseUp = function(movedPoint: PointT, points: Array<PointT>, side: SideT, dotting: DottingT) {
       moveAndUpdate(movedPoint, points, side, dotting)
-      graph.linearEquationInequality.stopDraggigItem()
+      graph.linearEquationInequality.stopDraggingItem()
     }
 
     graph.linearEquationInequality.setDraggable(onMouseDown, onMouseMove, onMouseUp)
