@@ -10,7 +10,7 @@ import
   , getQuadraticFunction
   , getExponentialFunction
   } from './../logic/graph-equations.js'
-import type {GraphSettingsT, PointT, SideT, DottingT} from './../helpers/graph-util.js'
+import type {GraphSettingsT, PointT, SideT, StyleT} from './../helpers/graph-util.js'
 
 const itemsAtPoint = function(point: PointT, groups: Array<any>): boolean {
   const allItems = _
@@ -343,14 +343,14 @@ const PaperUtil = {
 
     this.linearEquationInequality = {
       side: null,
-      dotting: null,
+      style: null,
 
       setSide: (side: SideT) => {
         this.linearEquationInequality.side = side
       },
 
-      setDotting: (dotting: DottingT) => {
-        this.linearEquationInequality.dotting = dotting
+      setStyle: (style: StyleT) => {
+        this.linearEquationInequality.style = style
       },
 
       updateFunction: () => {
@@ -358,7 +358,7 @@ const PaperUtil = {
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
         const fn = getLinearFunction(gridPoint1, gridPoint2)
         const {minGridX, maxGridX, stepX} = graphSettings
-        const isDashed = this.linearEquationInequality.dotting === "dotted"
+        const isDashed = this.linearEquationInequality.style === "dotted"
         this.traceCurve('curve', fn, minGridX, maxGridX, stepX, 'blue', isDashed)
         this.linearEquationInequality.updateInequalitySide(this.linearEquationInequality.side)
       },
@@ -390,15 +390,15 @@ const PaperUtil = {
         const pointsTool = new paper.Tool(this.groups['points'])
 
         pointsTool.onMouseDown = event => {
-          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.dotting)
+          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.style)
         }
 
         pointsTool.onMouseDrag = event => {
-          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.dotting)
+          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.style)
         }
 
         pointsTool.onMouseUp = event => {
-          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.dotting)
+          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.style)
         }
       },
 
@@ -414,8 +414,8 @@ const PaperUtil = {
           this.draggedItem = item
         } else if (isPointCloseToFunction(fn, point, graphSettings.stepY)) {
           // Clicking on function
-          const dotting = this.linearEquationInequality.dotting === "dotted" ? "plain" : "dotted"
-          this.linearEquationInequality.setDotting(dotting)
+          const style = this.linearEquationInequality.style === "dotted" ? "solid" : "dotted"
+          this.linearEquationInequality.setStyle(style)
           this.linearEquationInequality.updateFunction()
         } else {
           const clickedLessThan = isPointBelowFunction(fn, point)

@@ -20,10 +20,14 @@ export type SideT
   = "lessThan"
   | "greaterThan"
 
-export type DottingT
+export type StyleT
   = "dotted"
-  | "plain"
+  | "solid"
 
+export type InequalityT =
+  { side: SideT
+  , style: StyleT
+  }
 
 export type PointT =
   { x: number
@@ -40,8 +44,7 @@ export type GraphSettingsT =
   , startingPoints: Array<PointT>
   , pointColors: Array<string>
   , pointSize: number
-  , side?: SideT
-  , dotting?: DottingT
+  , inequality?: InequalityT
   }
 
 export type LinearGraphPropertyT =
@@ -56,10 +59,7 @@ export type ExponentialGraphPropertyT =
   { points: Array<PointT> }
 
 export type LinearInequalityGraphPropertyT =
-  { points: Array<PointT>
-  , side: SideT
-  , dotting: DottingT
-  }
+  { points: Array<PointT> } & InequalityT
 
 export type ScatterPointsGraphPropertyT =
   { points: Array<PointT> }
