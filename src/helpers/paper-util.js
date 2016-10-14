@@ -12,6 +12,7 @@ import
   } from './../logic/graph-equations.js'
 import type {GraphSettingsT, PointT, SideT, StyleT} from './../helpers/graph-util.js'
 
+// Returns true if there is an item in one of the group close the point passed
 const itemsAtPoint = function(point: PointT, groups: Array<any>): boolean {
   const allItems = _
     .chain(groups)
@@ -25,6 +26,7 @@ const itemsAtPoint = function(point: PointT, groups: Array<any>): boolean {
   return containing
 }
 
+// Returns the closest item next to the point passed
 const pickClosestItem = function(point: PointT, groups: Array<any>): ?mixed {
   const items = itemsAtPoint(point, groups)
   const itemsByDistance = _.sortBy(items, item => item.position.getDistance(point, true))
@@ -49,6 +51,7 @@ const createCircle = function(center: PointT, radius: number, fillColor: string)
   )
 }
 
+// Return the coordinates of the given point in grid coordinates into view coordinates
 const fromGridCoordinateToView = function(view: any, gridPoint: PointT, graphSettings: GraphSettingsT): PointT {
   const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
   const {x, y} = gridPoint
@@ -60,6 +63,7 @@ const fromGridCoordinateToView = function(view: any, gridPoint: PointT, graphSet
   )
 }
 
+// Return the coordinates of the given point in view coordinates into grid coordinates
 const fromViewCoordinateToGrid = function(view: any, viewPoint, graphSettings: GraphSettingsT): PointT {
   const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
   const {x, y} = viewPoint

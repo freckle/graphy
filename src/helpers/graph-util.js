@@ -87,6 +87,7 @@ export function getClosestStepPoint(point: PointT, graphSettings: GraphSettingsT
 
 const GraphUtil = {
 
+  // This function traces the grid on the canvas based on the graph settings
   createGrid: function(graph: any, graphSettings: GraphSettingsT) {
     const {minGridX, maxGridX, minGridY, maxGridY, stepX, stepY} = graphSettings
     const minXAxisGrid = {x: minGridX, y: 0}
@@ -113,6 +114,8 @@ const GraphUtil = {
     graph.createLine('grid', minYAxisGrid, maxYAxisGrid, 'black')
   },
 
+  // This function initialize the canvas with the drawing library,
+  // set the grid on the canvas and set the default points for the graph
   setupGraph: function(graphType: GraphTypeT, canvas: any, onPointChanged: (movingPoint: ?PointT, graphProperties: GraphPropertiesT) => void, graphSettings: GraphSettingsT) {
     const graph = PaperUtil.setupGraph(canvas, graphSettings)
 
