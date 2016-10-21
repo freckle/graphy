@@ -31,5 +31,4 @@ describe("getArrayOfNElements", function() {
     assert.isArray(res)
     assert.strictEqual(res.length, ["foo", "bar", "foo"])
   })
-
 })
