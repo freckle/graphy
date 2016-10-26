@@ -1,7 +1,7 @@
 /* @flow */
 
-import paper from 'paper'
 import _ from 'lodash'
+import paper from './../../vendor/js/paper-core.js'
 
 import
   { isPointBelowFunction
