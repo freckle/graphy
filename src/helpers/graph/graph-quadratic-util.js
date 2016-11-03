@@ -19,7 +19,7 @@ const GraphQuadraticUtil = {
       const hasMoved = graph.quadraticEquation.moveDraggedItemAt(stepPoint)
       if (hasMoved) {
         const graphProperties =
-          { graphType: 'linear-inequality'
+          { graphType: 'quadratic'
           , property:
             { vertex
             , point
