@@ -24,7 +24,7 @@ const GraphLinearInequalityUtil = {
       const hasMoved = graph.linearEquationInequality.moveDraggedItemAt(stepPoint)
       if (hasMoved) {
         const graphProperties =
-          { graphType: 'quadratic'
+          { graphType: 'linear-inequality'
           , property:
             { points
             , side
