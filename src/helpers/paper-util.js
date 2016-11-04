@@ -10,7 +10,7 @@ import
   , getQuadraticFunction
   , getExponentialFunction
   } from './../logic/graph-equations.js'
-import type {GraphSettingsT, PointT, SideT, StyleT} from './../helpers/graph-util.js'
+import type {GraphSettingsT, PointT, InequalityT} from './../helpers/graph-util.js'
 
 // Returns true if there is an item in one of the group close the point passed
 const itemsAtPoint = function(point: PointT, groups: Array<any>): boolean {
@@ -346,15 +346,10 @@ const PaperUtil = {
     }
 
     this.linearEquationInequality = {
-      side: null,
-      style: null,
+      inequality: null,
 
-      setSide: (side: SideT) => {
-        this.linearEquationInequality.side = side
-      },
-
-      setStyle: (style: StyleT) => {
-        this.linearEquationInequality.style = style
+      setInequality: (inequality: InequalityT) => {
+        this.linearEquationInequality.inequality = inequality
       },
 
       updateFunction: () => {
@@ -362,12 +357,12 @@ const PaperUtil = {
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
         const fn = getLinearFunction(gridPoint1, gridPoint2)
         const {minGridX, maxGridX, stepX} = graphSettings
-        const isDashed = this.linearEquationInequality.style === "dotted"
+        const isDashed = _.includes(["gt", "lt"], this.linearEquationInequality.inequality)
         this.traceCurve('curve', fn, minGridX, maxGridX, stepX, 'blue', isDashed)
-        this.linearEquationInequality.updateInequalitySide(this.linearEquationInequality.side)
+        this.linearEquationInequality.updateInequalitySide(this.linearEquationInequality.inequality)
       },
 
-      updateInequalitySide: (side: SideT) => {
+      updateInequalitySide: (inequality: InequalityT) => {
         this.groups['inequality-side'].removeChildren()
         const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
         const fn = getLinearFunction(gridPoint1, gridPoint2)
@@ -383,7 +378,7 @@ const PaperUtil = {
         const bottomLeftCorner = {x: minGridX, y: maxGridY}
         const bottomRightCorner = {x: maxGridX, y: maxGridY}
         const shapePoints =
-          side === "lessThan" ?
+          inequality === "lt" || inequality === "lteq" ?
             [gridPointEnd1, topLeftCorner, topRightCorner, gridPointEnd2] :
             [gridPointEnd1, bottomLeftCorner, bottomRightCorner, gridPointEnd2]
 
@@ -394,15 +389,15 @@ const PaperUtil = {
         const pointsTool = new paper.Tool(this.groups['points'])
 
         pointsTool.onMouseDown = event => {
-          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.style)
+          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
         }
 
         pointsTool.onMouseDrag = event => {
-          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.style)
+          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
         }
 
         pointsTool.onMouseUp = event => {
-          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.side, this.linearEquationInequality.style)
+          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
         }
       },
 
@@ -418,13 +413,31 @@ const PaperUtil = {
           this.draggedItem = item
         } else if (isPointCloseToFunction(fn, point, graphSettings.stepY)) {
           // Clicking on function
-          const style = this.linearEquationInequality.style === "dotted" ? "solid" : "dotted"
-          this.linearEquationInequality.setStyle(style)
+          let newInequality
+          if (this.linearEquationInequality.inequality === "lt") {
+            newInequality = "lteq"
+          } else if (this.linearEquationInequality.inequality === "lteq") {
+            newInequality = "lt"
+          } else if (this.linearEquationInequality.inequality === "gt") {
+            newInequality = "gteq"
+          } else if (this.linearEquationInequality.inequality === "gteq") {
+            newInequality = "gt"
+          }
+          this.linearEquationInequality.setInequality(newInequality)
           this.linearEquationInequality.updateFunction()
         } else {
           const clickedLessThan = isPointBelowFunction(fn, point)
-          const side = clickedLessThan ? "lessThan" : "greaterThan"
-          this.linearEquationInequality.setSide(side)
+          let newInequality
+          if (this.linearEquationInequality.inequality === "lt" && !clickedLessThan) {
+            newInequality = "gt"
+          } else if (this.linearEquationInequality.inequality === "lteq" && !clickedLessThan) {
+            newInequality = "gteq"
+          } else if (this.linearEquationInequality.inequality === "gt" && clickedLessThan) {
+            newInequality = "lt"
+          } else if (this.linearEquationInequality.inequality === "gteq" && clickedLessThan) {
+            newInequality = "lteq"
+          }
+          this.linearEquationInequality.setInequality(newInequality)
           this.linearEquationInequality.updateFunction()
         }
       },
