@@ -16,18 +16,11 @@ export type GraphTypeT
   | 'exponential'
   | 'scatter-points'
 
-export type SideT
-  = "lessThan"
-  | "greaterThan"
-
-export type StyleT
-  = "dotted"
-  | "solid"
-
-export type InequalityT =
-  { side: SideT
-  , style: StyleT
-  }
+export type InequalityT
+  = 'lt'
+  | 'lteq'
+  | 'gt'
+  | 'gteq'
 
 export type PointT =
   { x: number

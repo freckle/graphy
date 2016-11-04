@@ -56,10 +56,7 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
         [ { x: -1, y: -1}
         , { x: 1, y: 1}
         ]
-      const inequality =
-        { side: "lessThan"
-        , style: "solid"
-        }
+      const inequality = 'lt'
       return _.extend({}, baseGraphSettings, {startingPoints}, {inequality})
     }
     case 'quadratic': {

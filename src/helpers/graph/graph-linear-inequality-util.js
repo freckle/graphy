@@ -2,7 +2,7 @@
 
 import {getClosestStepPoint} from './../graph-util.js'
 import {getArrayOfNElements} from './../array-helper.js'
-import type {GraphSettingsT, PointT, GraphPropertiesT, SideT, StyleT} from './../graph-util.js'
+import type {GraphSettingsT, PointT, GraphPropertiesT, InequalityT} from './../graph-util.js'
 
 const GraphLinearInequalityUtil = {
 
@@ -14,12 +14,10 @@ const GraphLinearInequalityUtil = {
     if (!graphSettings.inequality) {
       throw new Error("GraphLinearInequalityUtil.createGraph: graphSettings doesn't contain inequality property")
     }
-    const {side, style} = graphSettings.inequality
-    graph.linearEquationInequality.setSide(side)
-    graph.linearEquationInequality.setStyle(style)
+    graph.linearEquationInequality.setInequality(graphSettings.inequality)
     graph.linearEquationInequality.updateFunction()
 
-    const moveAndUpdate = function(movedPoint: PointT, points: Array<PointT>, side: SideT, style: StyleT) {
+    const moveAndUpdate = function(movedPoint: PointT, points: Array<PointT>, inequality: InequalityT) {
       const stepPoint = getClosestStepPoint(movedPoint, graphSettings)
       const hasMoved = graph.linearEquationInequality.moveDraggedItemAt(stepPoint)
       if (hasMoved) {
@@ -27,8 +25,7 @@ const GraphLinearInequalityUtil = {
           { graphType: 'linear-inequality'
           , property:
             { points
-            , side
-            , style
+            , inequality
             }
           }
         onPointChanged(stepPoint, graphProperties)
@@ -36,17 +33,17 @@ const GraphLinearInequalityUtil = {
       }
     }
 
-    const onMouseDown = function(movedPoint: PointT, points: Array<PointT>, side: SideT, style: StyleT) {
+    const onMouseDown = function(movedPoint: PointT, points: Array<PointT>, inequality: InequalityT) {
       graph.linearEquationInequality.startDraggingItemAt(movedPoint)
-      moveAndUpdate(movedPoint, points, side, style)
+      moveAndUpdate(movedPoint, points, inequality)
     }
 
-    const onMouseMove = function(movedPoint: PointT, points: Array<PointT>, side: SideT, style: StyleT) {
-      moveAndUpdate(movedPoint, points, side, style)
+    const onMouseMove = function(movedPoint: PointT, points: Array<PointT>, inequality: InequalityT) {
+      moveAndUpdate(movedPoint, points, inequality)
     }
 
-    const onMouseUp = function(movedPoint: PointT, points: Array<PointT>, side: SideT, style: StyleT) {
-      moveAndUpdate(movedPoint, points, side, style)
+    const onMouseUp = function(movedPoint: PointT, points: Array<PointT>, inequality: InequalityT) {
+      moveAndUpdate(movedPoint, points, inequality)
       graph.linearEquationInequality.stopDraggingItem()
     }
 
