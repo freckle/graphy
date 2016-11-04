@@ -3,6 +3,11 @@
 import paper from 'paper'
 import _ from 'lodash'
 
+export type PaperPointT =
+  { x: number
+  , y: number
+  }
+
 import
   { isPointBelowFunction
   , isPointCloseToFunction
@@ -52,7 +57,7 @@ const createCircle = function(center: PointT, radius: number, fillColor: string)
 }
 
 // Return the coordinates of the given point in grid coordinates into view coordinates
-const fromGridCoordinateToView = function(view: any, gridPoint: PointT, graphSettings: GraphSettingsT): PointT {
+const fromGridCoordinateToView = function(view: any, gridPoint: PointT, graphSettings: GraphSettingsT): PaperPointT {
   const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
   const {x, y} = gridPoint
   const viewSize = view.size
@@ -64,11 +69,11 @@ const fromGridCoordinateToView = function(view: any, gridPoint: PointT, graphSet
 }
 
 // Return the coordinates of the given point in view coordinates into grid coordinates
-const fromViewCoordinateToGrid = function(view: any, viewPoint, graphSettings: GraphSettingsT): PointT {
+const fromViewCoordinateToGrid = function(view: any, viewPoint: PaperPointT, graphSettings: GraphSettingsT): PointT {
   const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
   const {x, y} = viewPoint
   const viewSize = view.size
-  return new paper.Point(
+  return (
     { x: (maxGridX - minGridX) / viewSize.width * x
     , y: (maxGridY - minGridY) / viewSize.height * y
     }
@@ -110,7 +115,7 @@ const PaperUtil = {
     }
 
     // Make the conversion from View coordinates to Grid coordinates
-    this.fromViewCoordinateToGrid = (paperPoint: PointT): PointT => {
+    this.fromViewCoordinateToGrid = (paperPoint: PaperPointT): PointT => {
       return fromViewCoordinateToGrid(paper.view, paperPoint, graphSettings)
     }
 
