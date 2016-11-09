@@ -56,6 +56,17 @@ const createCircle = function(center: PointT, radius: number, fillColor: string)
   )
 }
 
+// Return the coordinates of the closest point in grid bounds
+const getClosestInGridPoint = function(view: any, gridPoint: PointT, graphSettings: GraphSettingsT): PointT {
+  const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
+  const {x, y} = gridPoint
+  return (
+    { x: _.clamp(x, minGridX, maxGridX)
+    , y: _.clamp(y, minGridY, maxGridY)
+    }
+  )
+}
+
 // Return the coordinates of the given point in grid coordinates into view coordinates
 const fromGridCoordinateToView = function(view: any, gridPoint: PointT, graphSettings: GraphSettingsT): PaperPointT {
   const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
@@ -154,6 +165,12 @@ const PaperUtil = {
       return _.map(this.groups[group].children, item => this.fromViewCoordinateToGrid(item.position))
     }
 
+    this.callFuncWithConvertedPoint = (func: Function, paperPoint: PaperPointT, addArgs: mixed) => {
+      const gridPoint = this.fromViewCoordinateToGrid(paperPoint)
+      const inGridBoundsPoint = getClosestInGridPoint(paper.view, gridPoint, graphSettings)
+      func.call(this, inGridBoundsPoint, addArgs)
+    }
+
     this.linearEquation = {
 
       updateFunction: () => {
@@ -166,18 +183,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool(this.groups['points'])
-
-        pointsTool.onMouseDown = event => {
-          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
-
-        pointsTool.onMouseDrag = event => {
-          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
-
-        pointsTool.onMouseUp = event => {
-          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -221,18 +229,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool()
-
-        pointsTool.onMouseDown = event => {
-          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.quadraticEquation.getVertexAndPoint())
-        }
-
-        pointsTool.onMouseDrag = event => {
-          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.quadraticEquation.getVertexAndPoint())
-        }
-
-        pointsTool.onMouseUp = event => {
-          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.quadraticEquation.getVertexAndPoint())
-        }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.quadraticEquation.getVertexAndPoint()) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.quadraticEquation.getVertexAndPoint()) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.quadraticEquation.getVertexAndPoint()) }
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -268,18 +267,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool()
-
-        pointsTool.onMouseDown = event => {
-          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
-
-        pointsTool.onMouseDrag = event => {
-          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
-
-        pointsTool.onMouseUp = event => {
-          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -315,18 +305,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool()
-
-        pointsTool.onMouseDown = event => {
-          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
-
-        pointsTool.onMouseDrag = event => {
-          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
-
-        pointsTool.onMouseUp = event => {
-          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'))
-        }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -392,18 +373,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool(this.groups['points'])
-
-        pointsTool.onMouseDown = event => {
-          onMouseDown(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
-        }
-
-        pointsTool.onMouseDrag = event => {
-          onMouseDrag(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
-        }
-
-        pointsTool.onMouseUp = event => {
-          onMouseUp(this.fromViewCoordinateToGrid(event.point), this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
-        }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.linearEquationInequality.inequality) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.linearEquationInequality.inequality) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.linearEquationInequality.inequality) }
       },
 
       startDraggingItemAt: (point: PointT) => {
