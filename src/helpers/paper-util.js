@@ -97,7 +97,7 @@ const PaperUtil = {
       // Move View to be centered on 0,0 of the Grid which is determined by
       // the GraphSettings (not always the middle of the canvas)
       // To do that we apply a translation to the paper view with the ratio
-      // of GridMinX * GridWidth and same for Y axis
+      // of GridMinX / GridWidth and same for Y axis
       // Because Y axis is inverted (coef -1) to have negative number, the
       // translation has to be based on View Height
       const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
