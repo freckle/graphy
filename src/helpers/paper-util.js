@@ -94,8 +94,18 @@ const PaperUtil = {
     const initialize = (): any => {
       paper.setup(canvas)
 
-      // Move View to be centered on 0,0
-      paper.view.transform(new paper.Matrix(1,0,0,-1,paper.view.center.x, paper.view.center.y))
+      // Move View to be centered on 0,0 of the Grid which is determined by
+      // the GraphSettings (not always the middle of the canvas)
+      // To do that we apply a translation to the paper view with the ratio
+      // of GridMinX * GridWidth and same for Y axis
+      // Because Y axis is inverted (coef -1) to have negative number, the
+      // translation has to be based on View Height
+      const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
+      const widthGrid = Math.abs(maxGridX) + Math.abs(minGridX)
+      const heightGrid = Math.abs(maxGridY) + Math.abs(minGridY)
+      const tx = paper.view.size.width * (Math.abs(minGridX) / widthGrid)
+      const ty = paper.view.size.height - (paper.view.size.height * (Math.abs(minGridY) / heightGrid))
+      paper.view.transform(new paper.Matrix(1,0,0,-1,tx, ty))
 
       this.groups = {}
       this.groups['grid'] = new paper.Group()
