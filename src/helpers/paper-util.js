@@ -17,6 +17,40 @@ import
   } from './../logic/graph-equations.js'
 import type {GraphSettingsT, PointT, InequalityT} from './../helpers/graph-util.js'
 
+// Return the strict or loose version of the inequality and keep the side
+// eg: lt -> lteq
+// eg: lteq -> lt
+const switchInequalityStrictness = function(inequality: InequalityT): InequalityT {
+  if (inequality === "lt") {
+    return "lteq"
+  } else if (inequality === "lteq") {
+    return "lt"
+  } else if (inequality === "gt") {
+    return "gteq"
+  } else if (inequality === "gteq") {
+    return "gt"
+  } else {
+    throw new Error(`Invalid inequality ${inequality}`)
+  }
+}
+
+// Return the opposite version of the inequality when click is on the
+// opposite side and keep the strictness
+// eg: gt && clickedLessThan -> lt
+const switchToOppositeInequality = function(inequality: InequalityT, clickedLessThan: boolean): InequalityT {
+  if (inequality === "lt" && !clickedLessThan) {
+    return "gt"
+  } else if (inequality === "lteq" && !clickedLessThan) {
+    return "gteq"
+  } else if (inequality === "gt" && clickedLessThan) {
+    return "lt"
+  } else if (inequality === "gteq" && clickedLessThan) {
+    return "lteq"
+  } else {
+    return inequality
+  }
+}
+
 // Returns true if there is an item in one of the group close the point passed
 const itemsAtPoint = function(point: PointT, groups: Array<any>): boolean {
   const allItems = _
@@ -428,30 +462,12 @@ const PaperUtil = {
           this.draggedItem = item
         } else if (isPointCloseToFunction(fn, point, graphSettings.stepY)) {
           // Clicking on function
-          let newInequality
-          if (this.linearEquationInequality.inequality === "lt") {
-            newInequality = "lteq"
-          } else if (this.linearEquationInequality.inequality === "lteq") {
-            newInequality = "lt"
-          } else if (this.linearEquationInequality.inequality === "gt") {
-            newInequality = "gteq"
-          } else if (this.linearEquationInequality.inequality === "gteq") {
-            newInequality = "gt"
-          }
+          const newInequality = switchInequalityStrictness(this.linearEquationInequality.inequality)
           this.linearEquationInequality.setInequality(newInequality)
           this.linearEquationInequality.updateFunction()
         } else {
           const clickedLessThan = isPointBelowFunction(fn, point)
-          let newInequality
-          if (this.linearEquationInequality.inequality === "lt" && !clickedLessThan) {
-            newInequality = "gt"
-          } else if (this.linearEquationInequality.inequality === "lteq" && !clickedLessThan) {
-            newInequality = "gteq"
-          } else if (this.linearEquationInequality.inequality === "gt" && clickedLessThan) {
-            newInequality = "lt"
-          } else if (this.linearEquationInequality.inequality === "gteq" && clickedLessThan) {
-            newInequality = "lteq"
-          }
+          const newInequality = switchToOppositeInequality(this.linearEquationInequality.inequality, clickedLessThan)
           this.linearEquationInequality.setInequality(newInequality)
           this.linearEquationInequality.updateFunction()
         }
