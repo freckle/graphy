@@ -183,9 +183,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool(this.groups['points'])
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown.bind(this), event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag.bind(this), event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp.bind(this), event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -229,9 +229,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool()
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown.bind(this), event.point, this.quadraticEquation.getVertexAndPoint()) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag.bind(this), event.point, this.quadraticEquation.getVertexAndPoint()) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp.bind(this), event.point, this.quadraticEquation.getVertexAndPoint()) }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.quadraticEquation.getVertexAndPoint()) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.quadraticEquation.getVertexAndPoint()) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.quadraticEquation.getVertexAndPoint()) }
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -267,9 +267,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool()
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown.bind(this), event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag.bind(this), event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp.bind(this), event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -305,9 +305,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool()
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown.bind(this), event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag.bind(this), event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp.bind(this), event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
       },
 
       startDraggingItemAt: (point: PointT) => {
