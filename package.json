@@ -1,36 +1,34 @@
 {
   "name": "graphy",
   "version": "0.1.0",
-  "main": "./src/grapher.js",
+  "main": "./lib/grapher.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/frontrowed/graphy.git"
   },
   "devDependencies": {
     "babel-core": "^6.14.0",
+    "babel-cli": "^6.14.0",
     "babel-eslint": "^6.1.2",
     "babel-plugin-transform-class-properties": "^6.11.5",
     "babel-plugin-transform-flow-strip-types": "^6.14.0",
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.5.0",
-    "babel-preset-stage-2": "^6.13.0",
-    "babelify": "^7.3.0",
-    "browserify": "^13.1.0",
     "eslint": "^3.5.0",
     "eslint-plugin-flowtype": "^2.19.0",
     "eslint-plugin-react": "^6.3.0",
     "flow-bin": "^0.32.0"
   },
   "dependencies": {
-    "babel-runtime": "^6.11.6",
     "lodash": "^4.15.0",
     "paper": "^0.10.2",
     "react": "^15.3.1"
   },
   "scripts": {
-    "bundle": "browserify src/grapher.js -t babelify --outfile index.js",
-    "build": "npm run lint && npm run flow && npm run bundle",
+    "compile": "babel src -d lib/",
+    "prepublish": "npm run compile",
+    "build": "npm run lint && npm run flow",
     "flow": "flow",
     "lint": "eslint src/**/*.js"
   },
