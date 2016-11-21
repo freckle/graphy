@@ -1,6 +1,12 @@
 {
-  "name": "graphy",
-  "version": "0.1.0",
+  "name": "graphy-js",
+  "version": "0.0.1",
+  "author": {
+    "name" : "Front Row Education",
+    "email" : "engineering@frontrowed.com",
+    "url" : "https://www.frontrowed.com/"
+  },
+  "license": "MIT",
   "main": "./lib/grapher.js",
   "repository": {
     "type": "git",
