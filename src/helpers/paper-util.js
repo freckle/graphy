@@ -18,16 +18,16 @@ import
 import type {GraphSettingsT, PointT, InequalityT} from './../helpers/graph-util.js'
 
 // Return the strict or loose version of the inequality and keep the side
-// eg: lt -> lteq
-// eg: lteq -> lt
+// eg: lt -> le
+// eg: le -> lt
 const switchInequalityStrictness = function(inequality: InequalityT): InequalityT {
   if (inequality === "lt") {
-    return "lteq"
-  } else if (inequality === "lteq") {
+    return "le"
+  } else if (inequality === "le") {
     return "lt"
   } else if (inequality === "gt") {
-    return "gteq"
-  } else if (inequality === "gteq") {
+    return "ge"
+  } else if (inequality === "ge") {
     return "gt"
   } else {
     throw new Error(`Invalid inequality ${inequality}`)
@@ -40,12 +40,12 @@ const switchInequalityStrictness = function(inequality: InequalityT): Inequality
 const switchToOppositeInequality = function(inequality: InequalityT, clickedLessThan: boolean): InequalityT {
   if (inequality === "lt" && !clickedLessThan) {
     return "gt"
-  } else if (inequality === "lteq" && !clickedLessThan) {
-    return "gteq"
+  } else if (inequality === "le" && !clickedLessThan) {
+    return "ge"
   } else if (inequality === "gt" && clickedLessThan) {
     return "lt"
-  } else if (inequality === "gteq" && clickedLessThan) {
-    return "lteq"
+  } else if (inequality === "ge" && clickedLessThan) {
+    return "le"
   } else {
     return inequality
   }
@@ -408,7 +408,7 @@ const PaperUtil = {
         const bottomLeftCorner = {x: minGridX, y: maxGridY}
         const bottomRightCorner = {x: maxGridX, y: maxGridY}
         const shapePoints =
-          inequality === "lt" || inequality === "lteq" ?
+          inequality === "lt" || inequality === "le" ?
             [gridPointEnd1, topLeftCorner, topRightCorner, gridPointEnd2] :
             [gridPointEnd1, bottomLeftCorner, bottomRightCorner, gridPointEnd2]
 

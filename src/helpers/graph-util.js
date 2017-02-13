@@ -18,9 +18,9 @@ export type GraphTypeT
 
 export type InequalityT
   = 'lt'
-  | 'lteq'
+  | 'le'
   | 'gt'
-  | 'gteq'
+  | 'ge'
 
 export type PointT =
   { x: number
