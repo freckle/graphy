@@ -417,9 +417,9 @@ const PaperUtil = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
         const pointsTool = new paper.Tool(this.groups['points'])
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.linearEquationInequality.inequality) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.linearEquationInequality.inequality) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.linearEquationInequality.inequality) }
+        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality) }
+        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality) }
+        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality) }
       },
 
       startDraggingItemAt: (point: PointT) => {
