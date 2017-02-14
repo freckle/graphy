@@ -23,6 +23,47 @@ const defaultPointColors =
   ]
 
 const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
+  let inequality
+  let defaultStartingPoints = []
+  switch (grapherProps.graphType) {
+    case 'linear':
+      defaultStartingPoints =
+        [ { x: -1, y: -1}
+        , { x: 1, y: 1}
+        ]
+      break
+    case 'linear-inequality':
+      defaultStartingPoints =
+        [ { x: -1, y: -1}
+        , { x: 1, y: 1}
+        ]
+      inequality = 'lt'
+      break
+    case 'quadratic':
+      defaultStartingPoints =
+        [ { x: 0, y: 0}
+        , { x: 5, y: 5}
+        ]
+      break
+    case 'exponential':
+      defaultStartingPoints =
+        [ { x: 0, y: 1}
+        , { x: 2, y: 4}
+        ]
+      break
+    case 'scatter-points':
+      defaultStartingPoints =
+        [ { x: 0, y: 0}
+        , { x: 0, y: 0}
+        , { x: 0, y: 0}
+        , { x: 0, y: 0}
+        , { x: 0, y: 0}
+        ]
+      break
+    default:
+      throw new Error (`Could not recognize graph type: ${grapherProps.graphType}`)
+  }
+
   const minGridX = fromMaybe(defaultMinGridX, grapherProps.minGridX)
   const maxGridX = fromMaybe(defaultMaxGridX, grapherProps.maxGridX)
   const minGridY = fromMaybe(defaultMinGridY, grapherProps.minGridY)
@@ -31,8 +72,9 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
   const stepY = fromMaybe(defaultStepY, grapherProps.stepY)
   const pointSize = fromMaybe(defaultPointSize, grapherProps.pointSize)
   const pointColors = fromMaybeNonEmpty(defaultPointColors, grapherProps.pointColors)
+  const startingPoints = fromMaybeNonEmpty(defaultStartingPoints, grapherProps.startingPoints)
 
-  const baseGraphSettings =
+  return (
     { minGridX
     , maxGridX
     , minGridY
@@ -41,51 +83,10 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
     , stepY
     , pointSize
     , pointColors
+    , inequality
+    , startingPoints
     }
-
-  switch (grapherProps.graphType) {
-    case 'linear': {
-      const startingPoints =
-        [ { x: -1, y: -1}
-        , { x: 1, y: 1}
-        ]
-      return _.extend({}, baseGraphSettings, {startingPoints})
-    }
-    case 'linear-inequality': {
-      const startingPoints =
-        [ { x: -1, y: -1}
-        , { x: 1, y: 1}
-        ]
-      const inequality = 'lt'
-      return _.extend({}, baseGraphSettings, {startingPoints}, {inequality})
-    }
-    case 'quadratic': {
-      const startingPoints =
-        [ { x: 0, y: 0}
-        , { x: 5, y: 5}
-        ]
-      return _.extend({}, baseGraphSettings, {startingPoints})
-    }
-    case 'exponential': {
-      const startingPoints =
-        [ { x: 0, y: 1}
-        , { x: 2, y: 4}
-        ]
-      return _.extend({}, baseGraphSettings, {startingPoints})
-    }
-    case 'scatter-points': {
-      const startingPoints =
-        [ { x: 0, y: 0}
-        , { x: 0, y: 0}
-        , { x: 0, y: 0}
-        , { x: 0, y: 0}
-        , { x: 0, y: 0}
-        ]
-      return _.extend({}, baseGraphSettings, {startingPoints})
-    }
-    default:
-      throw new Error (`Could not recognize graph type: ${grapherProps.graphType}`)
-  }
+  )
 }
 
 type GrapherProps =
@@ -99,6 +100,7 @@ type GrapherProps =
   , stepY?: ?number
   , pointSize?: ?number
   , pointColors?: ?Array<string>
+  , startingPoints?: Array<PointT>
   }
 
 export default class Grapher extends React.Component<void, GrapherProps, void> {
