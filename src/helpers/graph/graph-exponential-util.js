@@ -1,5 +1,7 @@
 /* @flow */
 
+import _ from 'lodash'
+
 import {getClosestStepPoint} from './../graph-util.js'
 import {getArrayOfNElements} from './../array-helper.js'
 import type {GraphSettingsT, PointT, GraphPropertiesT} from './../graph-util.js'
@@ -16,11 +18,12 @@ const GraphExponentialUtil = {
 
     const moveAndUpdate = function(movedPoint: PointT, points: Array<PointT>) {
       const stepPoint = getClosestStepPoint(movedPoint, graphSettings)
+      const stepPoints: Array<PointT> = _.map(points, point => getClosestStepPoint(point, graphSettings))
       const hasMoved = graph.exponentialEquation.moveDraggedItemAt(stepPoint)
       if (hasMoved) {
         const graphProperties =
           { graphType: 'exponential'
-          , property: { points }
+          , property: { points: stepPoints }
           }
         onPointChanged(stepPoint, graphProperties)
         graph.exponentialEquation.updateFunction()

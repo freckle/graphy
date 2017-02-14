@@ -21,8 +21,8 @@ const GraphQuadraticUtil = {
         const graphProperties =
           { graphType: 'quadratic'
           , property:
-            { vertex
-            , point
+            { vertex: getClosestStepPoint(vertex, graphSettings)
+            , point: getClosestStepPoint(point, graphSettings)
             }
           }
         onPointChanged(stepPoint, graphProperties)
