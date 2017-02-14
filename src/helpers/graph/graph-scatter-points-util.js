@@ -16,11 +16,12 @@ const GraphScatterPointsUtil = {
 
     const moveAndUpdate = function(movedPoint: PointT, points: Array<PointT>) {
       const stepPoint = getClosestStepPoint(movedPoint, graphSettings)
+      const stepPoints: Array<PointT> = _.map(points, point => getClosestStepPoint(point, graphSettings))
       const hasMoved = graph.scatterPoints.moveDraggedItemAt(stepPoint)
       if (hasMoved) {
         const graphProperties =
           { graphType: 'scatter-points'
-          , property: { points }
+          , property: { points: stepPoints }
           }
 
         onPointChanged(stepPoint, graphProperties)
