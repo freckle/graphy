@@ -72,7 +72,14 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
   const stepY = fromMaybe(defaultStepY, grapherProps.stepY)
   const pointSize = fromMaybe(defaultPointSize, grapherProps.pointSize)
   const pointColors = fromMaybeNonEmpty(defaultPointColors, grapherProps.pointColors)
-  const startingPoints = fromMaybeNonEmpty(defaultStartingPoints, grapherProps.startingPoints)
+  const startingPoints =
+    _.map(fromMaybeNonEmpty(defaultStartingPoints, grapherProps.startingPoints), ({x, y}) =>
+      (
+        { x: _.clamp(x, minGridX, maxGridX)
+        , y: _.clamp(y, minGridY, maxGridY)
+        }
+      )
+    )
 
   return (
     { minGridX
@@ -109,14 +116,30 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
   state: void;
 
   componentDidMount() {
-    const canvas = document.getElementById(`graph-${this.props.graphType}-canvas`)
-    const graphSettings = getGraphSetting(this.props)
+    this.reset(this.props)
+  }
 
-    GraphUtil.setupGraph(this.props.graphType, canvas, this.props.onPointChanged, graphSettings)
+  shouldComponentUpdate(nextProps: GrapherProps): boolean {
+    const graphSettings = getGraphSetting(this.props)
+    const nextGraphSettings = getGraphSetting(nextProps)
+    return !_.isEqual(graphSettings, nextGraphSettings)
+  }
+
+  componentWillUpdate(nextProps: GrapherProps) {
+    this.reset(nextProps)
+  }
+
+  reset(props: GrapherProps) {
+    const canvas = document.getElementById(`graph-${props.graphType}-canvas`)
+    const graphSettings = getGraphSetting(props)
+    GraphUtil.setupGraph(props.graphType, canvas, props.onPointChanged, graphSettings)
+  }
+
+  componentDidUnmount() {
+    GraphUtil.destroy()
   }
 
   render() {
-
     return (
       <canvas
         id={`graph-${this.props.graphType}-canvas`}

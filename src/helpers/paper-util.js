@@ -134,9 +134,9 @@ type GroupKeyT
   | 'inequality-side'
 
 const PaperUtil = {
-
   setupGraph: function(canvas: any, graphSettings: GraphSettingsT): any {
     const initialize = (): any => {
+      this.destroy()
       paper.setup(canvas)
 
       // Move View to be centered on 0,0 of the Grid which is determined by
@@ -462,6 +462,12 @@ const PaperUtil = {
     }
 
     return initialize(canvas)
+  },
+
+  destroy: function() {
+    if (paper.project) {
+      paper.project.clear()
+    }
   }
 }
 
