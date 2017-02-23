@@ -119,12 +119,15 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
     this.reset(this.props)
   }
 
+  // We should only update if the props have changed
   shouldComponentUpdate(nextProps: GrapherProps): boolean {
     const graphSettings = getGraphSetting(this.props)
     const nextGraphSettings = getGraphSetting(nextProps)
     return !_.isEqual(graphSettings, nextGraphSettings)
   }
 
+  // Updating means running setupGraph again to destroy what's currently
+  // on the canvas and re-draw
   componentWillUpdate(nextProps: GrapherProps) {
     this.reset(nextProps)
   }
