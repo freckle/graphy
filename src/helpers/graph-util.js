@@ -133,6 +133,10 @@ const GraphUtil = {
       default:
         throw new Error (`Could not recognize graph type: ${this.props.graphType}`)
     }
+  },
+
+  destroy: function() {
+    PaperUtil.destroy()
   }
 }
 export default GraphUtil
