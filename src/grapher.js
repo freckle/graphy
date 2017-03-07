@@ -114,9 +114,24 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
   static defaultProps: void;
   props: GrapherProps;
   state: void;
+  graph: any;
 
   componentDidMount() {
     this.reset(this.props)
+  }
+
+  componentWillUnmount() {
+    if (this.graph) {
+      this.graph.destroy()
+      this.graph = null
+    }
+  }
+
+  // We should only update if the props have changed
+  componentWillReceiveProps(nextProps: GrapherProps) {
+    if (this.shouldComponentUpdate(nextProps)) {
+      this.componentWillUpdate(nextProps)
+    }
   }
 
   // We should only update if the props have changed
@@ -135,13 +150,11 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
   reset(props: GrapherProps) {
     const canvas = document.getElementById(`graph-${props.graphType}-canvas`)
     const graphSettings = getGraphSetting(props)
-    GraphUtil.setupGraph(props.graphType, canvas, props.onPointChanged, graphSettings)
+    if (this.graph) {
+      this.graph.destroy()
+    }
+    this.graph = GraphUtil.setupGraph(props.graphType, canvas, props.onPointChanged, graphSettings)
   }
-
-  componentDidUnmount() {
-    GraphUtil.destroy()
-  }
-
   render() {
     return (
       <canvas
