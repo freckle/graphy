@@ -166,14 +166,15 @@ const PaperUtil = {
     }
 
     this.destroy = () => {
-      if (this.groups) {
-        this.groups = {}
-      }
-
       this.removeHandlers()
+
       if (this.pointsTool) {
         this.pointsTool.remove()
         this.pointsTool = null
+      }
+
+      if (this.groups) {
+        this.groups = {}
       }
 
       if (paper.project) {
