@@ -145,11 +145,12 @@ const PaperUtil = {
       // Because Y axis is inverted (coef -1) to have negative number, the
       // translation has to be based on View Height
       const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
-      const widthGrid = Math.abs(maxGridX) + Math.abs(minGridX)
-      const heightGrid = Math.abs(maxGridY) + Math.abs(minGridY)
-      const tx = paper.view.size.width * (Math.abs(minGridX) / widthGrid)
-      const ty = paper.view.size.height - (paper.view.size.height * (Math.abs(minGridY) / heightGrid))
-      paper.view.transform(new paper.Matrix(1,0,0,-1,tx, ty))
+      const widthGrid = Math.abs(maxGridX - minGridX)
+      const heightGrid = Math.abs(maxGridY - minGridY)
+
+      const tx = minGridX * (paper.view.size.width / widthGrid)
+      const ty = minGridY * (paper.view.size.height / heightGrid) + paper.view.size.height
+      paper.view.transform(new paper.Matrix(1, 0, 0, -1, -tx, ty))
 
       this.groups = {}
       this.groups['grid'] = new paper.Group()
