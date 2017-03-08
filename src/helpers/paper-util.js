@@ -136,7 +136,6 @@ type GroupKeyT
 const PaperUtil = {
   setupGraph: function(canvas: any, graphSettings: GraphSettingsT): any {
     const initialize = (): any => {
-      this.destroy()
       paper.setup(canvas)
 
       // Move View to be centered on 0,0 of the Grid which is determined by
@@ -146,22 +145,66 @@ const PaperUtil = {
       // Because Y axis is inverted (coef -1) to have negative number, the
       // translation has to be based on View Height
       const {minGridX, maxGridX, minGridY, maxGridY} = graphSettings
-      const widthGrid = Math.abs(maxGridX) + Math.abs(minGridX)
-      const heightGrid = Math.abs(maxGridY) + Math.abs(minGridY)
-      const tx = paper.view.size.width * (Math.abs(minGridX) / widthGrid)
-      const ty = paper.view.size.height - (paper.view.size.height * (Math.abs(minGridY) / heightGrid))
-      paper.view.transform(new paper.Matrix(1,0,0,-1,tx, ty))
+      const widthGrid = Math.abs(maxGridX - minGridX)
+      const heightGrid = Math.abs(maxGridY - minGridY)
+
+      const tx = minGridX * (paper.view.size.width / widthGrid)
+      const ty = minGridY * (paper.view.size.height / heightGrid) + paper.view.size.height
+      paper.view.transform(new paper.Matrix(1, 0, 0, -1, -tx, ty))
 
       this.groups = {}
       this.groups['grid'] = new paper.Group()
-      this.groups['points'] = new paper.Group()
+      const pointsGroup = this.groups['points'] = new paper.Group()
       this.groups['curve'] = new paper.Group()
       this.groups['vertex'] = new paper.Group()
       this.groups['point'] = new paper.Group()
       this.groups['inequality-side'] = new paper.Group()
+      this.pointsTool = new paper.Tool(pointsGroup)
+      this.pointsTool.activate()
 
       paper.view.draw()
       return this
+    }
+
+    this.destroy = () => {
+      this.removeHandlers()
+
+      if (this.pointsTool) {
+        this.pointsTool.remove()
+        this.pointsTool = null
+      }
+
+      if (this.groups) {
+        this.groups = {}
+      }
+
+      if (paper.project) {
+        paper.project.clear()
+      }
+    }
+
+    this.removeHandlers = () => {
+      if (this.pointsTool) {
+        if (this.onMouseDown) {
+          this.pointsTool.off('mousedown', this.onMouseDown)
+          this.onMouseDown = null
+        }
+        if (this.onMouseDrag) {
+          this.pointsTool.off('mousedrag', this.onMouseDrag)
+          this.onMouseDrag = null
+        }
+        if (this.onMouseUp) {
+          this.pointsTool.off('mouseup', this.onMouseUp)
+          this.onMouseUp = null
+        }
+      }
+    }
+
+    this.setDraggable = (onMouseDown, onMouseDrag, onMouseUp) => {
+      this.removeHandlers()
+      this.pointsTool.on('mousedown', this.onMouseDown = onMouseDown)
+      this.pointsTool.on('mousedrag', this.onMouseDrag = onMouseDrag)
+      this.pointsTool.on('mouseup', this.onMouseUp = onMouseUp)
     }
 
     // Make the conversion from Grid coordinates to view coordinates
@@ -226,10 +269,17 @@ const PaperUtil = {
       },
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
-        const pointsTool = new paper.Tool(this.groups['points'])
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
+        this.setDraggable(
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'))
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points'))
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'))
+          }
+        )
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -272,10 +322,17 @@ const PaperUtil = {
       },
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
-        const pointsTool = new paper.Tool()
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.quadraticEquation.getVertexAndPoint()) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.quadraticEquation.getVertexAndPoint()) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.quadraticEquation.getVertexAndPoint()) }
+        this.setDraggable(
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDown, event.point, this.quadraticEquation.getVertexAndPoint())
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.quadraticEquation.getVertexAndPoint())
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseUp, event.point, this.quadraticEquation.getVertexAndPoint())
+          }
+        )
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -310,10 +367,17 @@ const PaperUtil = {
       },
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
-        const pointsTool = new paper.Tool()
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
+        this.setDraggable(
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'))
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points'))
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'))
+          }
+        )
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -348,10 +412,17 @@ const PaperUtil = {
     this.scatterPoints = {
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
-        const pointsTool = new paper.Tool()
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points')) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points')) }
+        this.setDraggable(
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'))
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points'))
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'))
+          }
+        )
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -416,10 +487,17 @@ const PaperUtil = {
       },
 
       setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
-        const pointsTool = new paper.Tool(this.groups['points'])
-        pointsTool.onMouseDown = event => { this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality) }
-        pointsTool.onMouseDrag = event => { this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality) }
-        pointsTool.onMouseUp = event => { this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality) }
+        this.setDraggable(
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseDrag, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
+          },
+          event => {
+            this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
+          }
+        )
       },
 
       startDraggingItemAt: (point: PointT) => {
@@ -462,12 +540,6 @@ const PaperUtil = {
     }
 
     return initialize(canvas)
-  },
-
-  destroy: function() {
-    if (paper.project) {
-      paper.project.clear()
-    }
   }
 }
 

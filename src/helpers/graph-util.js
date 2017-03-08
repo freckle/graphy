@@ -52,7 +52,9 @@ export type ExponentialGraphPropertyT =
   { points: Array<PointT> }
 
 export type LinearInequalityGraphPropertyT =
-  { points: Array<PointT> } & InequalityT
+  { points: Array<PointT>
+  , inequality: InequalityT
+  }
 
 export type ScatterPointsGraphPropertyT =
   { points: Array<PointT> }
@@ -109,7 +111,7 @@ const GraphUtil = {
 
   // This function initialize the canvas with the drawing library,
   // set the grid on the canvas and set the default points for the graph
-  setupGraph: function(graphType: GraphTypeT, canvas: any, onPointChanged: (movingPoint: ?PointT, graphProperties: GraphPropertiesT) => void, graphSettings: GraphSettingsT) {
+  setupGraph: function(graphType: GraphTypeT, canvas: any, onPointChanged: (movingPoint: ?PointT, graphProperties: GraphPropertiesT) => void, graphSettings: GraphSettingsT): any {
     const graph = PaperUtil.setupGraph(canvas, graphSettings)
 
     GraphUtil.createGrid(graph, graphSettings)
@@ -133,10 +135,7 @@ const GraphUtil = {
       default:
         throw new Error (`Could not recognize graph type: ${this.props.graphType}`)
     }
+    return graph
   },
-
-  destroy: function() {
-    PaperUtil.destroy()
-  }
 }
 export default GraphUtil
