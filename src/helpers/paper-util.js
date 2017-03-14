@@ -231,10 +231,14 @@ const PaperUtil = {
     }
 
     this.traceCurve = (group: GroupKeyT, fn: ((x: number) => number), minXGridPoint: number, maxXGridPoint: number, stepGridX: number, color: string, isDashed: boolean = false) => {
-      const gridRangePoints = _.range(minXGridPoint, maxXGridPoint + stepGridX, stepGridX)
-      const paperPoints = _.map(gridRangePoints, x => this.fromGridCoordinateToView({x, y: fn(x)}))
-      const path = new paper.Path(paperPoints)
-      path.smooth('continuous')
+      // Subdivide the grid steps for more precision
+      const xs = _.range(minXGridPoint, maxXGridPoint + stepGridX, stepGridX / 8.0)
+      const points = _.map(xs, x => this.fromGridCoordinateToView({x, y: fn(x)}))
+      const path = new paper.Path(points)
+
+      // Reduce the number of segments by fitting Bezier curves to the path
+      path.simplify()
+
       path.strokeColor = color
       path.dashArray = isDashed ? [10, 5] : []
       this.groups[group].addChild(path)
