@@ -115,6 +115,7 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
   props: GrapherProps;
   state: void;
   graph: any;
+  canvas: HTMLElement;
 
   componentDidMount() {
     this.reset(this.props)
@@ -148,17 +149,16 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
   }
 
   reset(props: GrapherProps) {
-    const canvas = document.getElementById(`graph-${props.graphType}-canvas`)
-    const graphSettings = getGraphSetting(props)
     if (this.graph) {
       this.graph.destroy()
     }
-    this.graph = GraphUtil.setupGraph(props.graphType, canvas, props.onPointChanged, graphSettings)
+    this.graph = GraphUtil.setupGraph(props.graphType, this.canvas, props.onPointChanged, getGraphSetting(props))
   }
+
   render() {
     return (
       <canvas
-        id={`graph-${this.props.graphType}-canvas`}
+        ref={element => this.canvas = element}
         className="graph-canvas"
       >
       </canvas>
