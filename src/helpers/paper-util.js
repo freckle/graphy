@@ -136,6 +136,11 @@ type GroupKeyT
 const PaperUtil = {
   setupGraph: function(canvas: any, graphSettings: GraphSettingsT): any {
     const initialize = (): any => {
+      // Save initial canvas state (restore in destroy())
+      // We do this because on some version of Chrome for Mac OS X, paper.js seems
+      // to leave the canvas in a transformed state after clearing the project
+      canvas.getContext('2d').save()
+
       paper.setup(canvas)
 
       // Move View to be centered on 0,0 of the Grid which is determined by
@@ -181,6 +186,9 @@ const PaperUtil = {
       if (paper.project) {
         paper.project.clear()
       }
+
+      // Restore initial canvas state (save in initialize())
+      canvas.getContext('2d').restore()
     }
 
     this.removeHandlers = () => {
