@@ -61,7 +61,7 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
         ]
       break
     default:
-      throw new Error (`Could not recognize graph type: ${grapherProps.graphType}`)
+      throw new Error(`Could not recognize graph type: ${grapherProps.graphType}`)
   }
 
   const minGridX = fromMaybe(defaultMinGridX, grapherProps.minGridX)
