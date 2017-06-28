@@ -551,7 +551,7 @@ const PaperUtil = {
       }
     }
 
-    return initialize(canvas)
+    return initialize()
   }
 }
 
