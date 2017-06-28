@@ -14,7 +14,7 @@ TODO
 
 ## Build
 
-`npm run build`
+`yarn build`
 
 Contains `flow` and `eslint`
 
