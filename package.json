@@ -1,10 +1,10 @@
 {
   "name": "graphy-js",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": {
-    "name" : "Front Row Education",
-    "email" : "engineering@frontrowed.com",
-    "url" : "https://www.frontrowed.com/"
+    "name": "Front Row Education",
+    "email": "engineering@frontrowed.com",
+    "url": "https://www.frontrowed.com/"
   },
   "license": "MIT",
   "main": "./lib/grapher.js",
@@ -13,8 +13,8 @@
     "url": "https://github.com/frontrowed/graphy.git"
   },
   "devDependencies": {
-    "babel-core": "6.25.0",
     "babel-cli": "6.24.1",
+    "babel-core": "6.25.0",
     "babel-eslint": "7.2.2",
     "babel-plugin-transform-class-properties": "6.24.1",
     "babel-plugin-transform-flow-strip-types": "6.22.0",
@@ -28,8 +28,10 @@
   },
   "dependencies": {
     "lodash": "4.17.4",
-    "paper": "0.11.4",
-    "react": "15.6.1"
+    "paper": "0.11.4"
+  },
+  "peerDependencies": {
+    "react": "16.2.0"
   },
   "scripts": {
     "compile": "babel src -d lib/",
