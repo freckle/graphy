@@ -1,6 +1,6 @@
 {
   "name": "graphy-js",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "author": {
     "name": "Front Row Education",
     "email": "engineering@frontrowed.com",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "lodash": "4.17.4",
-    "paper": "0.11.4"
+    "paper": "0.11.8"
   },
   "peerDependencies": {
     "react": "16.2.0"
