@@ -8,6 +8,15 @@ export type PaperPointT =
   , y: number
   }
 
+export type AxisT
+  = 'x'
+  | 'y'
+
+export type AnchorT
+  = 'left'
+  | 'bottom'
+  | 'right'
+
 import
   { isPointBelowFunction
   , isPointCloseToFunction
@@ -81,6 +90,21 @@ const createLine = function(from: PointT, to: PointT, strokeColor: string): any 
   )
 }
 
+const createTick = function(point: PointT, axis: AxisT): any {
+  const size = axis === 'x' ? new paper.Size(4, 8) : new paper.Size(8, 4)
+
+  const rect = new paper.Path.Rectangle(
+    { point
+    , size
+    , fillColor: "black"
+    }
+  )
+
+  rect.translate([-rect.bounds.width / 2, -rect.bounds.height / 2])
+
+  return rect
+}
+
 const createCircle = function(center: PointT, radius: number, fillColor: string): any {
   return new paper.Path.Circle(
     { center
@@ -88,6 +112,31 @@ const createCircle = function(center: PointT, radius: number, fillColor: string)
     , fillColor
     }
   )
+}
+
+const createLabel = function(point: PointT, content: string, anchor: AnchorT): any {
+  let position = null;
+  if (anchor === 'right') {
+    position = [point.x - 11, point.y - 11]
+  } else if (anchor === 'bottom') {
+    position = [point.x + 11, point.y + 11]
+  } else {
+    position = [point.x + 11, point.y - 11]
+  }
+
+  let label = new paper.PointText(position)
+  label.content = content
+  label.scaling = [1, -1]
+
+  if (anchor === 'right') {
+    label.translate(new paper.Point([-label.bounds.width, 0]))
+  } else if (anchor === 'bottom') {
+    // impossible to get baseline and due to ligatures height is too large
+    // divide height in order to get a more reasonable translation
+    label.translate(new paper.Point([0, label.bounds.height / 2]))
+  }
+
+  return label
 }
 
 // Return the coordinates of the closest point in grid bounds
@@ -132,6 +181,8 @@ type GroupKeyT
   | 'vertex'
   | 'point'
   | 'inequality-side'
+  | 'tick'
+  | 'label'
 
 const PaperUtil = {
   setupGraph: function(canvas: any, graphSettings: GraphSettingsT): any {
@@ -164,6 +215,8 @@ const PaperUtil = {
       this.groups['vertex'] = new paper.Group()
       this.groups['point'] = new paper.Group()
       this.groups['inequality-side'] = new paper.Group()
+      this.groups['label'] = new paper.Group()
+      this.groups['tick'] = new paper.Group()
       this.pointsTool = new paper.Tool(pointsGroup)
       this.pointsTool.activate()
 
@@ -232,10 +285,22 @@ const PaperUtil = {
       this.groups[group].addChild(line)
     }
 
+    this.createTick = (group: GroupKeyT, gridPoint: PointT, axis: AxisT) => {
+      const paperPoint = this.fromGridCoordinateToView(gridPoint)
+      const tick = createTick(paperPoint, axis)
+      this.groups[group].addChild(tick)
+    }
+
     this.createCircle = (group: GroupKeyT, centerGridPoint: PointT, radius: number, fillColor: string)=> {
       const paperCenterPoint = this.fromGridCoordinateToView(centerGridPoint)
       const circle = createCircle(paperCenterPoint, radius, fillColor)
       this.groups[group].addChild(circle)
+    }
+
+    this.createLabel = (group: GroupKeyT, centerGridPoint: PointT, text: string, anchor: AnchorT = 'left') => {
+      const paperCenterPoint = this.fromGridCoordinateToView(centerGridPoint)
+      const label = createLabel(paperCenterPoint, text, anchor)
+      this.groups[group].addChild(label)
     }
 
     this.traceCurve = (group: GroupKeyT, fn: ((x: number) => number), minXGridPoint: number, maxXGridPoint: number, stepGridX: number, color: string, isDashed: boolean = false) => {

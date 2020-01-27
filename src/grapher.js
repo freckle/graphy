@@ -70,6 +70,7 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
   const maxGridY = fromMaybe(defaultMaxGridY, grapherProps.maxGridY)
   const stepX = fromMaybe(defaultStepX, grapherProps.stepX)
   const stepY = fromMaybe(defaultStepY, grapherProps.stepY)
+  const showBoundingLabels = fromMaybe(false, grapherProps.showBoundingLabels)
   const pointSize = fromMaybe(defaultPointSize, grapherProps.pointSize)
   const pointColors = fromMaybeNonEmpty(defaultPointColors, grapherProps.pointColors)
   const startingPoints =
@@ -92,6 +93,7 @@ const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
     , pointColors
     , inequality
     , startingPoints
+    , showBoundingLabels
     }
   )
 }
@@ -108,6 +110,7 @@ type GrapherProps =
   , pointSize?: ?number
   , pointColors?: ?Array<string>
   , startingPoints?: Array<PointT>
+  , showBoundingLabels?: ?boolean
   }
 
 export default class Grapher extends React.Component<void, GrapherProps, void> {

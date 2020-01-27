@@ -38,6 +38,7 @@ export type GraphSettingsT =
   , pointColors: Array<string>
   , pointSize: number
   , inequality?: InequalityT
+  , showBoundingLabels: ?boolean
   }
 
 export type LinearGraphPropertyT =
@@ -84,7 +85,7 @@ const GraphUtil = {
 
   // This function traces the grid on the canvas based on the graph settings
   createGrid: function(graph: any, graphSettings: GraphSettingsT) {
-    const {minGridX, maxGridX, minGridY, maxGridY, stepX, stepY} = graphSettings
+    const {minGridX, maxGridX, minGridY, maxGridY, stepX, stepY, showBoundingLabels} = graphSettings
     const minXAxisGrid = {x: minGridX, y: 0}
     const maxXAxisGrid = {x: maxGridX, y: 0}
     const minYAxisGrid = {x: 0, y: minGridY}
@@ -107,6 +108,20 @@ const GraphUtil = {
 
     graph.createLine('grid', minXAxisGrid, maxXAxisGrid, 'black')
     graph.createLine('grid', minYAxisGrid, maxYAxisGrid, 'black')
+
+    if(showBoundingLabels) {
+      graph.createLabel('label', minXAxisGrid, minGridX.toString(), 'left')
+      graph.createTick('tick', minXAxisGrid, 'x')
+
+      graph.createLabel('label', maxXAxisGrid, maxGridX.toString(), 'right')
+      graph.createTick('tick', maxXAxisGrid, 'x')
+
+      graph.createLabel('label', minYAxisGrid, minGridY.toString(), 'bottom')
+      graph.createTick('tick', minYAxisGrid, 'y')
+
+      graph.createLabel('label', maxYAxisGrid, maxGridY.toString(), 'left')
+      graph.createTick('tick', maxYAxisGrid, 'y')
+    }
   },
 
   // This function initialize the canvas with the drawing library,
