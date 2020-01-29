@@ -27,7 +27,7 @@
     "flow-bin": "0.49.1"
   },
   "dependencies": {
-    "lodash": "4.17.4",
+    "lodash": "4.17.13",
     "paper": "0.11.4"
   },
   "peerDependencies": {
