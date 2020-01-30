@@ -115,25 +115,22 @@ const createCircle = function(center: PointT, radius: number, fillColor: string)
 }
 
 const createLabel = function(point: PointT, content: string, anchor: AnchorT): any {
-  let position = null;
-  if (anchor === 'right') {
-    position = [point.x - 11, point.y - 11]
-  } else if (anchor === 'bottom') {
-    position = [point.x + 11, point.y + 11]
-  } else {
-    position = [point.x + 11, point.y - 11]
-  }
-
-  let label = new paper.PointText(position)
+  let label = new paper.PointText(point)
   label.content = content
   label.scaling = [1, -1]
 
+  // if text is on the right move it over the full width so it ends on the
+  // desired point
   if (anchor === 'right') {
     label.translate(new paper.Point([-label.bounds.width, 0]))
-  } else if (anchor === 'bottom') {
-    // impossible to get baseline and due to ligatures height is too large
-    // divide height in order to get a more reasonable translation
+  }
+
+  // impossible to get font baseline and due to ligatures height is too large
+  // divide height in order to get a more reasonable translation
+  if (anchor === 'bottom') {
     label.translate(new paper.Point([0, label.bounds.height / 2]))
+  } else {
+    label.translate(new paper.Point([0, -label.bounds.height / 2]))
   }
 
   return label
@@ -297,9 +294,28 @@ const PaperUtil = {
       this.groups[group].addChild(circle)
     }
 
-    this.createLabel = (group: GroupKeyT, centerGridPoint: PointT, text: string, anchor: AnchorT = 'left') => {
-      const paperCenterPoint = this.fromGridCoordinateToView(centerGridPoint)
-      const label = createLabel(paperCenterPoint, text, anchor)
+    this.createLabel = (group: GroupKeyT, axisBoundsGridCoordinatePoint: PointT, text: string, anchor: AnchorT = 'left') => {
+      const axisBoundsPoint = this.fromGridCoordinateToView(axisBoundsGridCoordinatePoint)
+
+      let nextClosestVerticalPoint = null
+      if (anchor === 'bottom') {
+        nextClosestVerticalPoint = this.fromGridCoordinateToView({ x: axisBoundsGridCoordinatePoint.x, y: axisBoundsGridCoordinatePoint.y + 1 })
+      } else {
+        nextClosestVerticalPoint = this.fromGridCoordinateToView({ x: axisBoundsGridCoordinatePoint.x, y: axisBoundsGridCoordinatePoint.y - 1 })
+      }
+
+      let nextClosestHorizontalPoint = null
+      if (anchor === 'right') {
+        nextClosestHorizontalPoint = this.fromGridCoordinateToView({ x: axisBoundsGridCoordinatePoint.x - 1, y: axisBoundsGridCoordinatePoint.y })
+      } else {
+        nextClosestHorizontalPoint = this.fromGridCoordinateToView({ x: axisBoundsGridCoordinatePoint.x + 1, y: axisBoundsGridCoordinatePoint.y })
+      }
+
+      const verticalOffset = (nextClosestVerticalPoint.y - axisBoundsPoint.y) / 10
+      const horizontalOffset = (nextClosestHorizontalPoint.x - axisBoundsPoint.x) / 10
+      const labelPoint = { x: axisBoundsPoint.x + horizontalOffset, y: axisBoundsPoint.y + verticalOffset }
+      const label = createLabel(labelPoint, text, anchor)
+
       this.groups[group].addChild(label)
     }
 
