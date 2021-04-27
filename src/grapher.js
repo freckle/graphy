@@ -1,17 +1,14 @@
 /* @flow */
 
-import React from "react";
 import _ from "lodash";
+import React from "react";
 
 import GraphUtil from "./helpers/graph-util.js";
+
 import type {
-  GraphSettingsT,
-  PointT,
-  GraphTypeT,
-  GraphPropertiesT,
-  InequalityT,
-} from "./helpers/graph-util.js";
-import { fromMaybe, fromMaybeNonEmpty } from "./helpers/maybe-helper.js";
+  GraphSettingsT, PointT, GraphTypeT, GraphPropertiesT, InequalityT,} from
+  "./helpers/graph-util.js";
+import {fromMaybe, fromMaybeNonEmpty} from "./helpers/maybe-helper.js";
 
 const defaultMinGridX = -10;
 const defaultMaxGridX = 10;
@@ -28,51 +25,50 @@ const defaultPointColors = [
   "#643173",
 ];
 
-const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
+const getGraphSetting = function(grapherProps: GrapherProps): GraphSettingsT {
   let defaultInequality;
   let defaultStartingPoints = [];
   switch (grapherProps.graphType) {
-    case "linear":
-      defaultStartingPoints = [
-        { x: -1, y: -1 },
-        { x: 1, y: 1 },
-      ];
-      break;
-    case "linear-inequality":
-      defaultStartingPoints = [
-        { x: -1, y: -1 },
-        { x: 1, y: 1 },
-      ];
-      defaultInequality = "lt";
-      break;
-    case "quadratic":
-      defaultStartingPoints = [
-        { x: 0, y: 0 },
-        { x: 5, y: 5 },
-      ];
-      break;
-    case "exponential":
-      defaultStartingPoints = [
-        { x: 0, y: 1 },
-        { x: 2, y: 4 },
-      ];
-      break;
-    case "scatter-points":
-      defaultStartingPoints = [
-        { x: 0, y: 0 },
-        { x: 0, y: 0 },
-        { x: 0, y: 0 },
-        { x: 0, y: 0 },
-        { x: 0, y: 0 },
-      ];
-      break;
-    case "empty":
-      defaultStartingPoints = [];
-      break;
-    default:
-      throw new Error(
-        `Could not recognize graph type: ${grapherProps.graphType}`
-      );
+  case "linear":
+    defaultStartingPoints = [
+      {x : -1, y : -1},
+      {x : 1, y : 1},
+    ];
+    break;
+  case "linear-inequality":
+    defaultStartingPoints = [
+      {x : -1, y : -1},
+      {x : 1, y : 1},
+    ];
+    defaultInequality = "lt";
+    break;
+  case "quadratic":
+    defaultStartingPoints = [
+      {x : 0, y : 0},
+      {x : 5, y : 5},
+    ];
+    break;
+  case "exponential":
+    defaultStartingPoints = [
+      {x : 0, y : 1},
+      {x : 2, y : 4},
+    ];
+    break;
+  case "scatter-points":
+    defaultStartingPoints = [
+      {x : 0, y : 0},
+      {x : 0, y : 0},
+      {x : 0, y : 0},
+      {x : 0, y : 0},
+      {x : 0, y : 0},
+    ];
+    break;
+  case "empty":
+    defaultStartingPoints = [];
+    break;
+  default:
+    throw new Error(
+        `Could not recognize graph type: ${grapherProps.graphType}`);
   }
 
   const minGridX = fromMaybe(defaultMinGridX, grapherProps.minGridX);
@@ -83,17 +79,14 @@ const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
   const stepY = fromMaybe(defaultStepY, grapherProps.stepY);
   const showBoundingLabels = fromMaybe(false, grapherProps.showBoundingLabels);
   const pointSize = fromMaybe(defaultPointSize, grapherProps.pointSize);
-  const pointColors = fromMaybeNonEmpty(
-    defaultPointColors,
-    grapherProps.pointColors
-  );
+  const pointColors =
+      fromMaybeNonEmpty(defaultPointColors, grapherProps.pointColors);
   const startingPoints = _.map(
-    fromMaybeNonEmpty(defaultStartingPoints, grapherProps.startingPoints),
-    ({ x, y }) => ({
-      x: _.clamp(x, minGridX, maxGridX),
-      y: _.clamp(y, minGridY, maxGridY),
-    })
-  );
+      fromMaybeNonEmpty(defaultStartingPoints, grapherProps.startingPoints),
+      ({x, y}) => ({
+        x : _.clamp(x, minGridX, maxGridX),
+        y : _.clamp(y, minGridY, maxGridY),
+      }));
   const inequality = fromMaybe(defaultInequality, grapherProps.inequality);
   const canInteract = fromMaybe(true, grapherProps.canInteract);
 
@@ -114,22 +107,26 @@ const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
 };
 
 type GrapherProps = {
-  onPointChanged: (
-    movingPoint: ?PointT,
-    graphProperties: GraphPropertiesT
-  ) => void,
+  onPointChanged: (movingPoint: ? PointT, graphProperties : GraphPropertiesT) =>
+      void,
   graphType: GraphTypeT,
-  minGridX?: ?number,
-  maxGridX?: ?number,
-  minGridY?: ?number,
-  maxGridY?: ?number,
-  stepX?: ?number,
-  stepY?: ?number,
-  pointSize?: ?number,
-  pointColors?: ?Array<string>,
-  startingPoints?: Array<PointT>,
-  showBoundingLabels?: ?boolean,
-  inequality?: InequalityT,
+  minGridX?: ? number,
+          maxGridX?:
+                  ? number,
+          minGridY?:
+                  ? number,
+          maxGridY?:
+                  ? number,
+          stepX?:
+               ? number,
+          stepY?:
+               ? number,
+          pointSize?:
+                   ? number,
+          pointColors?:
+                     ? Array<string>,
+          startingPoints?: Array<PointT>,
+  showBoundingLabels?: ? boolean, inequality?: InequalityT,
   canInteract?: boolean,
 };
 
@@ -140,9 +137,7 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
   graph: any;
   canvas: HTMLElement;
 
-  componentDidMount() {
-    this.reset(this.props);
-  }
+  componentDidMount() { this.reset(this.props); }
 
   componentWillUnmount() {
     if (this.graph) {
@@ -167,28 +162,23 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
 
   // Updating means running setupGraph again to destroy what's currently
   // on the canvas and re-draw
-  componentWillUpdate(nextProps: GrapherProps) {
-    this.reset(nextProps);
-  }
+  componentWillUpdate(nextProps: GrapherProps) { this.reset(nextProps); }
 
   reset(props: GrapherProps) {
     if (this.graph) {
       this.graph.destroy();
     }
-    this.graph = GraphUtil.setupGraph(
-      props.graphType,
-      this.canvas,
-      props.onPointChanged,
-      getGraphSetting(props)
-    );
+    this.graph =
+        GraphUtil.setupGraph(props.graphType, this.canvas, props.onPointChanged,
+                             getGraphSetting(props));
   }
 
   render() {
     return (
       <canvas
-        ref={(element) => (this.canvas = element)}
-        className="graph-canvas"
-      ></canvas>
+    ref = {(element) => (this.canvas = element)} className =
+        "graph-canvas" > <
+        /canvas>
     );
   }
 }
