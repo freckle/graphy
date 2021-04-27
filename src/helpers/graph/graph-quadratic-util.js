@@ -77,7 +77,8 @@ const GraphQuadraticUtil = {
       graph.quadraticEquation.stopDraggingItem();
     };
 
-    graph.quadraticEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp);
+    if (graphSettings.canInteract)
+      graph.quadraticEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp);
   },
 };
 

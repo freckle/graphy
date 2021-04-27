@@ -93,11 +93,12 @@ const GraphLinearInequalityUtil = {
       graph.linearEquationInequality.stopDraggingItem();
     };
 
-    graph.linearEquationInequality.setDraggable(
-      onMouseDown,
-      onMouseMove,
-      onMouseUp
-    );
+    if (graphSettings.canInteract)
+      graph.linearEquationInequality.setDraggable(
+        onMouseDown,
+        onMouseMove,
+        onMouseUp
+      );
   },
 };
 export default GraphLinearInequalityUtil;

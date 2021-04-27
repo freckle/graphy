@@ -14,7 +14,8 @@ export type GraphTypeT =
   | "linear-inequality"
   | "quadratic"
   | "exponential"
-  | "scatter-points";
+  | "scatter-points"
+  | "empty";
 
 export type InequalityT = "lt" | "le" | "gt" | "ge";
 
@@ -32,6 +33,7 @@ export type GraphSettingsT = {
   pointSize: number,
   inequality?: InequalityT,
   showBoundingLabels: ?boolean,
+  canInteract: boolean,
 };
 
 export type LinearGraphPropertyT = { points: Array<PointT> };
@@ -166,6 +168,8 @@ const GraphUtil = {
           onPointChanged,
           graphSettings
         );
+        break;
+      case "empty":
         break;
       default:
         throw new Error(

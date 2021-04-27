@@ -9,6 +9,7 @@ import type {
   PointT,
   GraphTypeT,
   GraphPropertiesT,
+  InequalityT,
 } from "./helpers/graph-util.js";
 import { fromMaybe, fromMaybeNonEmpty } from "./helpers/maybe-helper.js";
 
@@ -28,7 +29,7 @@ const defaultPointColors = [
 ];
 
 const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
-  let inequality;
+  let defaultInequality;
   let defaultStartingPoints = [];
   switch (grapherProps.graphType) {
     case "linear":
@@ -42,7 +43,7 @@ const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
         { x: -1, y: -1 },
         { x: 1, y: 1 },
       ];
-      inequality = "lt";
+      defaultInequality = "lt";
       break;
     case "quadratic":
       defaultStartingPoints = [
@@ -64,6 +65,9 @@ const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
         { x: 0, y: 0 },
         { x: 0, y: 0 },
       ];
+      break;
+    case "empty":
+      defaultStartingPoints = [];
       break;
     default:
       throw new Error(
@@ -90,6 +94,8 @@ const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
       y: _.clamp(y, minGridY, maxGridY),
     })
   );
+  const inequality = fromMaybe(defaultInequality, grapherProps.inequality);
+  const canInteract = fromMaybe(true, grapherProps.canInteract);
 
   return {
     minGridX,
@@ -103,6 +109,7 @@ const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
     inequality,
     startingPoints,
     showBoundingLabels,
+    canInteract,
   };
 };
 
@@ -122,6 +129,8 @@ type GrapherProps = {
   pointColors?: ?Array<string>,
   startingPoints?: Array<PointT>,
   showBoundingLabels?: ?boolean,
+  inequality?: InequalityT,
+  canInteract?: boolean,
 };
 
 export default class Grapher extends React.Component<void, GrapherProps, void> {

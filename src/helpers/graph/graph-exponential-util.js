@@ -66,7 +66,12 @@ const GraphExponentialUtil = {
       graph.exponentialEquation.stopDraggingItem();
     };
 
-    graph.exponentialEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp);
+    if (graphSettings.canInteract)
+      graph.exponentialEquation.setDraggable(
+        onMouseDown,
+        onMouseMove,
+        onMouseUp
+      );
   },
 };
 

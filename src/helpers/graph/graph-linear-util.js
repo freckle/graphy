@@ -66,7 +66,8 @@ const GraphLinearUtil = {
       graph.linearEquation.stopDraggingItem();
     };
 
-    graph.linearEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp);
+    if (graphSettings.canInteract)
+      graph.linearEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp);
   },
 };
 export default GraphLinearUtil;

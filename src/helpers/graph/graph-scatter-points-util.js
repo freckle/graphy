@@ -59,7 +59,8 @@ const GraphScatterPointsUtil = {
       graph.scatterPoints.stopDraggingItem();
     };
 
-    graph.scatterPoints.setDraggable(onMouseDown, onMouseMove, onMouseUp);
+    if (graphSettings.canInteract)
+      graph.scatterPoints.setDraggable(onMouseDown, onMouseMove, onMouseUp);
   },
 };
 
