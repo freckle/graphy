@@ -1,9 +1,10 @@
 /* @flow */
 
-import React from "react";
 import _ from "lodash";
+import React from "react";
 
 import GraphUtil from "./helpers/graph-util.js";
+
 import type {
   GraphSettingsT,
   PointT,
@@ -188,7 +189,9 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
       <canvas
         ref={(element) => (this.canvas = element)}
         className="graph-canvas"
-      ></canvas>
+      >
+        {" "}
+      </canvas>
     );
   }
 }

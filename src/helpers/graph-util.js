@@ -2,12 +2,12 @@
 
 import _ from "lodash";
 
-import PaperUtil from "./paper-util.js";
-import GraphLinearUtil from "./graph/graph-linear-util.js";
-import GraphLinearInequalityUtil from "./graph/graph-linear-inequality-util.js";
-import GraphQuadraticUtil from "./graph/graph-quadratic-util.js";
 import GraphExponentialUtil from "./graph/graph-exponential-util.js";
+import GraphLinearInequalityUtil from "./graph/graph-linear-inequality-util.js";
+import GraphLinearUtil from "./graph/graph-linear-util.js";
+import GraphQuadraticUtil from "./graph/graph-quadratic-util.js";
 import GraphScatterPointsUtil from "./graph/graph-scatter-points-util.js";
+import PaperUtil from "./paper-util.js";
 
 export type GraphTypeT =
   | "linear"
@@ -19,7 +19,10 @@ export type GraphTypeT =
 
 export type InequalityT = "lt" | "le" | "gt" | "ge";
 
-export type PointT = { x: number, y: number };
+export type PointT = {
+  x: number,
+  y: number,
+};
 
 export type GraphSettingsT = {
   minGridX: number,
@@ -36,18 +39,27 @@ export type GraphSettingsT = {
   canInteract: boolean,
 };
 
-export type LinearGraphPropertyT = { points: Array<PointT> };
+export type LinearGraphPropertyT = {
+  points: Array<PointT>,
+};
 
-export type QuadraticGraphPropertyT = { vertex: PointT, point: PointT };
+export type QuadraticGraphPropertyT = {
+  vertex: PointT,
+  point: PointT,
+};
 
-export type ExponentialGraphPropertyT = { points: Array<PointT> };
+export type ExponentialGraphPropertyT = {
+  points: Array<PointT>,
+};
 
 export type LinearInequalityGraphPropertyT = {
   points: Array<PointT>,
   inequality: InequalityT,
 };
 
-export type ScatterPointsGraphPropertyT = { points: Array<PointT> };
+export type ScatterPointsGraphPropertyT = {
+  points: Array<PointT>,
+};
 
 type GraphPropertyT =
   | LinearGraphPropertyT

@@ -2,8 +2,9 @@
 
 import _ from "lodash";
 
-import { getClosestStepPoint } from "./../graph-util.js";
 import { getArrayOfNElements } from "./../array-helper.js";
+import { getClosestStepPoint } from "./../graph-util.js";
+
 import type {
   GraphSettingsT,
   PointT,
