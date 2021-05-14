@@ -16,6 +16,7 @@ export type AnchorT
   = 'left'
   | 'bottom'
   | 'right'
+  | 'top'
 
 import
   { isPointBelowFunction
@@ -294,18 +295,18 @@ const PaperUtil = {
       this.groups[group].addChild(circle)
     }
 
-    this.createLabel = (group: GroupKeyT, axisBoundsGridCoordinatePoint: PointT, text: string, anchor: AnchorT = 'left') => {
+    this.createLabel = (group: GroupKeyT, axisBoundsGridCoordinatePoint: PointT, text: string, anchors: AnchorT[] = ['top', 'left']) => {
       const axisBoundsPoint = this.fromGridCoordinateToView(axisBoundsGridCoordinatePoint)
 
       let nextClosestVerticalPoint = null
-      if (anchor === 'bottom') {
+      if (anchors.indexOf('bottom') > -1) {
         nextClosestVerticalPoint = this.fromGridCoordinateToView({ x: axisBoundsGridCoordinatePoint.x, y: axisBoundsGridCoordinatePoint.y + 1 })
       } else {
         nextClosestVerticalPoint = this.fromGridCoordinateToView({ x: axisBoundsGridCoordinatePoint.x, y: axisBoundsGridCoordinatePoint.y - 1 })
       }
 
       let nextClosestHorizontalPoint = null
-      if (anchor === 'right') {
+      if (anchors.indexOf('right') > -1) {
         nextClosestHorizontalPoint = this.fromGridCoordinateToView({ x: axisBoundsGridCoordinatePoint.x - 1, y: axisBoundsGridCoordinatePoint.y })
       } else {
         nextClosestHorizontalPoint = this.fromGridCoordinateToView({ x: axisBoundsGridCoordinatePoint.x + 1, y: axisBoundsGridCoordinatePoint.y })
@@ -314,7 +315,7 @@ const PaperUtil = {
       const verticalOffset = (nextClosestVerticalPoint.y - axisBoundsPoint.y) / 10
       const horizontalOffset = (nextClosestHorizontalPoint.x - axisBoundsPoint.x) / 10
       const labelPoint = { x: axisBoundsPoint.x + horizontalOffset, y: axisBoundsPoint.y + verticalOffset }
-      const label = createLabel(labelPoint, text, anchor)
+      const label = createLabel(labelPoint, text, anchors[0])
 
       this.groups[group].addChild(label)
     }

@@ -128,16 +128,22 @@ const GraphUtil = {
     graph.createLine("grid", minYAxisGrid, maxYAxisGrid, "black");
 
     if (showBoundingLabels) {
-      graph.createLabel("label", minXAxisGrid, minGridX.toString(), "left");
-      graph.createTick("tick", minXAxisGrid, "x");
+      
+      // arrived at -4 through trial and error, observing the point where the cutoff from the bottom started
+      if(minGridY > -4) {
+        graph.createLabel('label', minXAxisGrid, minGridX.toString(), ['bottom', 'left']);
+        graph.createLabel('label', maxXAxisGrid, maxGridX.toString(), ['bottom', 'right']);
+      } else {
+        graph.createLabel('label', minXAxisGrid, minGridX.toString(), ['left']);
+        graph.createLabel('label', maxXAxisGrid, maxGridX.toString(), ['right']);
+      }
+      graph.createTick('tick', maxXAxisGrid, 'x');
+      graph.createTick('tick', minXAxisGrid, 'x');
 
-      graph.createLabel("label", maxXAxisGrid, maxGridX.toString(), "right");
-      graph.createTick("tick", maxXAxisGrid, "x");
-
-      graph.createLabel("label", minYAxisGrid, minGridY.toString(), "bottom");
+      graph.createLabel("label", minYAxisGrid, minGridY.toString(), ["bottom"]);
       graph.createTick("tick", minYAxisGrid, "y");
 
-      graph.createLabel("label", maxYAxisGrid, maxGridY.toString(), "left");
+      graph.createLabel("label", maxYAxisGrid, maxGridY.toString(), ["left"]);
       graph.createTick("tick", maxYAxisGrid, "y");
     }
   },
