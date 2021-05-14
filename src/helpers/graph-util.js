@@ -129,6 +129,7 @@ const GraphUtil = {
 
     if (showBoundingLabels) {
       
+      // arrived at -4 through trial and error, observing the point where the cutoff from the bottom started
       if(minGridY > -4) {
         graph.createLabel('label', minXAxisGrid, minGridX.toString(), 'bottom left');
         graph.createLabel('label', maxXAxisGrid, maxGridX.toString(), 'bottom right');
