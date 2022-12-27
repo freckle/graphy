@@ -37,6 +37,7 @@ export type GraphSettingsT = {
   inequality?: InequalityT,
   showBoundingLabels: ?boolean,
   canInteract: boolean,
+  ariaDescribedby?: ?string
 };
 
 export type LinearGraphPropertyT = {
