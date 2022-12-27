@@ -37,7 +37,7 @@ export type GraphSettingsT = {
   inequality?: InequalityT,
   showBoundingLabels: ?boolean,
   canInteract: boolean,
-  ariaDescribedby?: ?string
+  ariaDescribedby?: ?string,
 };
 
 export type LinearGraphPropertyT = {
@@ -129,17 +129,25 @@ const GraphUtil = {
     graph.createLine("grid", minYAxisGrid, maxYAxisGrid, "black");
 
     if (showBoundingLabels) {
-      
-      // arrived at -4 through trial and error, observing the point where the cutoff from the bottom started
-      if(minGridY > -4) {
-        graph.createLabel('label', minXAxisGrid, minGridX.toString(), ['bottom', 'left']);
-        graph.createLabel('label', maxXAxisGrid, maxGridX.toString(), ['bottom', 'right']);
+      // arrived at -4 through trial and error, observing the point where the
+      // cutoff from the bottom started
+      if (minGridY > -4) {
+        graph.createLabel("label", minXAxisGrid, minGridX.toString(), [
+          "bottom",
+          "left",
+        ]);
+        graph.createLabel("label", maxXAxisGrid, maxGridX.toString(), [
+          "bottom",
+          "right",
+        ]);
       } else {
-        graph.createLabel('label', minXAxisGrid, minGridX.toString(), ['left']);
-        graph.createLabel('label', maxXAxisGrid, maxGridX.toString(), ['right']);
+        graph.createLabel("label", minXAxisGrid, minGridX.toString(), ["left"]);
+        graph.createLabel("label", maxXAxisGrid, maxGridX.toString(), [
+          "right",
+        ]);
       }
-      graph.createTick('tick', maxXAxisGrid, 'x');
-      graph.createTick('tick', minXAxisGrid, 'x');
+      graph.createTick("tick", maxXAxisGrid, "x");
+      graph.createTick("tick", minXAxisGrid, "x");
 
       graph.createLabel("label", minYAxisGrid, minGridY.toString(), ["bottom"]);
       graph.createTick("tick", minYAxisGrid, "y");

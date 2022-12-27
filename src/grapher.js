@@ -111,7 +111,7 @@ const getGraphSetting = function (grapherProps: GrapherProps): GraphSettingsT {
     startingPoints,
     showBoundingLabels,
     canInteract,
-    ariaDescribedby: grapherProps.ariaDescribedby
+    ariaDescribedby: grapherProps.ariaDescribedby,
   };
 };
 
@@ -133,7 +133,7 @@ type GrapherProps = {
   showBoundingLabels?: ?boolean,
   inequality?: InequalityT,
   canInteract?: boolean,
-  ariaDescribedby?: ?string
+  ariaDescribedby?: ?string,
 };
 
 export default class Grapher extends React.Component<void, GrapherProps, void> {
@@ -187,8 +187,11 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
   }
 
   render() {
-    const {ariaDescribedby} = this.props
-    const ariaDescribedbyAttr = ariaDescribedby !== null && ariaDescribedby !== undefined ? {'aria-describedby': ariaDescribedby} : {}
+    const { ariaDescribedby } = this.props;
+    const ariaDescribedbyAttr =
+      ariaDescribedby !== null && ariaDescribedby !== undefined
+        ? { "aria-describedby": ariaDescribedby }
+        : {};
     return (
       <canvas
         ref={(element) => (this.canvas = element)}
