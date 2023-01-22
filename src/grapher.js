@@ -8,10 +8,10 @@ import GraphUtil from "./helpers/graph-util.js";
 import type {
   GraphSettingsT,
   PointT,
-  GraphTypeT,
   GraphPropertiesT,
   InequalityT,
 } from "./helpers/graph-util.js";
+import {type GraphTypeT} from './helpers/paper-util'
 import { fromMaybe, fromMaybeNonEmpty } from "./helpers/maybe-helper.js";
 
 const defaultMinGridX = -10;

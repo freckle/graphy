@@ -2,6 +2,15 @@
 
 import paper from 'paper'
 import _ from 'lodash'
+import map from 'lodash/map'
+
+export type GraphTypeT =
+  | "linear"
+  | "linear-inequality"
+  | "quadratic"
+  | "exponential"
+  | "scatter-points"
+  | "empty";
 
 export type PaperPointT =
   { x: number
@@ -106,11 +115,13 @@ const createTick = function(point: PointT, axis: AxisT): any {
   return rect
 }
 
-const createCircle = function(center: PointT, radius: number, fillColor: string): any {
+const createCircle = function(center: PointT, radius: number, fillColor: string, id?: ?string): any {
+  const idAttr = id !== null && id !== undefined ? {id} : {}
   return new paper.Path.Circle(
     { center
     , radius
     , fillColor
+    , data: {...idAttr}
     }
   )
 }
@@ -183,7 +194,7 @@ type GroupKeyT
   | 'label'
 
 const PaperUtil = {
-  setupGraph: function(canvas: any, graphSettings: GraphSettingsT): any {
+  setupGraph: function(canvas: HTMLCanvasElement, graphSettings: GraphSettingsT, graphType: GraphTypeT): any {
     const initialize = (): any => {
       // Save initial canvas state (restore in destroy())
       // We do this because on some version of Chrome for Mac OS X, paper.js seems
@@ -217,6 +228,28 @@ const PaperUtil = {
       this.groups['tick'] = new paper.Group()
       this.pointsTool = new paper.Tool(pointsGroup)
       this.pointsTool.activate()
+
+      // Provide keyboard accessible buttons for each
+      // dragable coordinate point on the graph
+      map(graphSettings.startingPoints, (p, index) => {
+        const controlButton = document.createElement('button')
+        const id = `control-button-${index}`
+        controlButton.id = id
+        controlButton.innerText = `Coordinate ${index + 1}`
+        canvas.appendChild(controlButton)
+        const paperCenterPoint = this.fromGridCoordinateToView(p)
+        const circle = createCircle(
+          paperCenterPoint, 
+          graphSettings.pointSize, 
+          graphSettings.pointColors[index],
+          id
+        )
+        if(graphType === 'quadratic' && index === 0) {
+          this.groups['vertex'].addChild(circle)
+        } else {
+          this.groups['points'].addChild(circle)
+        }
+      })
 
       paper.view.draw()
       return this

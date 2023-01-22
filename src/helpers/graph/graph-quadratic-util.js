@@ -1,6 +1,4 @@
 /* @flow */
-
-import { getArrayOfNElements } from "./../array-helper.js";
 import { getClosestStepPoint } from "./../graph-util.js";
 
 import type {
@@ -19,23 +17,6 @@ const GraphQuadraticUtil = {
     ) => void,
     graphSettings: GraphSettingsT
   ) {
-    const [vertexColor, pointColor] = getArrayOfNElements(
-      graphSettings.pointColors,
-      2
-    );
-    graph.createCircle(
-      "vertex",
-      graphSettings.startingPoints[0],
-      graphSettings.pointSize,
-      vertexColor
-    );
-    graph.createCircle(
-      "point",
-      graphSettings.startingPoints[1],
-      graphSettings.pointSize,
-      pointColor
-    );
-
     graph.quadraticEquation.updateFunction();
 
     const moveAndUpdate = function (

@@ -2,7 +2,6 @@
 
 import _ from "lodash";
 
-import { getArrayOfNElements } from "./../array-helper.js";
 import { getClosestStepPoint } from "./../graph-util.js";
 
 import type {
@@ -20,19 +19,6 @@ const GraphScatterPointsUtil = {
     ) => void,
     graphSettings: GraphSettingsT
   ) {
-    const pointColors = getArrayOfNElements(
-      graphSettings.pointColors,
-      graphSettings.startingPoints.length
-    );
-    _.forEach(graphSettings.startingPoints, (point, i) => {
-      graph.createCircle(
-        "points",
-        point,
-        graphSettings.pointSize,
-        graphSettings.pointColors[i]
-      );
-    });
-
     const moveAndUpdate = function (movedPoint: PointT, points: Array<PointT>) {
       const stepPoint = getClosestStepPoint(movedPoint, graphSettings);
       const stepPoints: Array<PointT> = _.map(points, (point) =>

@@ -7,15 +7,7 @@ import GraphLinearInequalityUtil from "./graph/graph-linear-inequality-util.js";
 import GraphLinearUtil from "./graph/graph-linear-util.js";
 import GraphQuadraticUtil from "./graph/graph-quadratic-util.js";
 import GraphScatterPointsUtil from "./graph/graph-scatter-points-util.js";
-import PaperUtil from "./paper-util.js";
-
-export type GraphTypeT =
-  | "linear"
-  | "linear-inequality"
-  | "quadratic"
-  | "exponential"
-  | "scatter-points"
-  | "empty";
+import PaperUtil, {type GraphTypeT} from "./paper-util.js";
 
 export type InequalityT = "lt" | "le" | "gt" | "ge";
 
@@ -168,7 +160,7 @@ const GraphUtil = {
     ) => void,
     graphSettings: GraphSettingsT
   ): any {
-    const graph = PaperUtil.setupGraph(canvas, graphSettings);
+    const graph = PaperUtil.setupGraph(canvas, graphSettings, graphType);
 
     GraphUtil.createGrid(graph, graphSettings);
 

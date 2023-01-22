@@ -2,7 +2,6 @@
 
 import _ from "lodash";
 
-import { getArrayOfNElements } from "./../array-helper.js";
 import { getClosestStepPoint } from "./../graph-util.js";
 
 import type {
@@ -20,23 +19,6 @@ const GraphLinearUtil = {
     ) => void,
     graphSettings: GraphSettingsT
   ) {
-    const [point1Color, point2Color] = getArrayOfNElements(
-      graphSettings.pointColors,
-      2
-    );
-    graph.createCircle(
-      "points",
-      graphSettings.startingPoints[0],
-      graphSettings.pointSize,
-      point1Color
-    );
-    graph.createCircle(
-      "points",
-      graphSettings.startingPoints[1],
-      graphSettings.pointSize,
-      point2Color
-    );
-
     graph.linearEquation.updateFunction();
 
     const moveAndUpdate = function (movedPoint: PointT, points: Array<PointT>) {
