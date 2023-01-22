@@ -42,7 +42,7 @@ const GraphQuadraticUtil = {
       point: PointT,
       points: QuadraticGraphPropertyT
     ) {
-      graph.quadraticEquation.startDraggingItemAt(point);
+      graph.quadraticEquation.startDraggingItemAt(point, false);
       moveAndUpdate(point, points);
     };
     const onMouseMove = function (
@@ -58,9 +58,13 @@ const GraphQuadraticUtil = {
       moveAndUpdate(point, points);
       graph.quadraticEquation.stopDraggingItem();
     };
+    const onKeyDown = function(point: PointT, points: QuadraticGraphPropertyT) {
+      graph.quadraticEquation.startDraggingItemAt(point, true);
+      moveAndUpdate(point, points);
+    };
 
     if (graphSettings.canInteract)
-      graph.quadraticEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp);
+      graph.quadraticEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp, onKeyDown);
   },
 };
 

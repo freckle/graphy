@@ -38,7 +38,7 @@ const GraphExponentialUtil = {
     };
 
     const onMouseDown = function (point: PointT, points: Array<PointT>) {
-      graph.exponentialEquation.startDraggingItemAt(point);
+      graph.exponentialEquation.startDraggingItemAt(point, false);
       moveAndUpdate(point, points);
     };
     const onMouseMove = function (point: PointT, points: Array<PointT>) {
@@ -48,12 +48,17 @@ const GraphExponentialUtil = {
       moveAndUpdate(point, points);
       graph.exponentialEquation.stopDraggingItem();
     };
+    const onKeyDown = function(point: PointT, points: Array<PointT>) {
+      graph.exponentialEquation.startDraggingItemAt(point, true);
+      moveAndUpdate(point, points);
+    }
 
     if (graphSettings.canInteract)
       graph.exponentialEquation.setDraggable(
         onMouseDown,
         onMouseMove,
-        onMouseUp
+        onMouseUp,
+        onKeyDown
       );
   },
 };

@@ -56,7 +56,7 @@ const GraphLinearInequalityUtil = {
       points: Array<PointT>,
       inequality: InequalityT
     ) {
-      graph.linearEquationInequality.startDraggingItemAt(movedPoint);
+      graph.linearEquationInequality.startDraggingItemAt(movedPoint, false);
       moveAndUpdate(movedPoint, points, inequality, true);
     };
 
@@ -77,11 +77,21 @@ const GraphLinearInequalityUtil = {
       graph.linearEquationInequality.stopDraggingItem();
     };
 
+    const onKeyDown = function(
+      point: PointT, 
+      points: Array<PointT>, 
+      inequality: InequalityT
+    ) {
+      graph.linearEquationInequality.startDraggingItemAt(point, true);
+      moveAndUpdate(point, points, inequality, true);
+    }
+
     if (graphSettings.canInteract)
       graph.linearEquationInequality.setDraggable(
         onMouseDown,
         onMouseMove,
-        onMouseUp
+        onMouseUp,
+        onKeyDown
       );
   },
 };

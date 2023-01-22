@@ -36,7 +36,7 @@ const GraphScatterPointsUtil = {
     };
 
     const onMouseDown = function (movedPoint: PointT, points: Array<PointT>) {
-      graph.scatterPoints.startDraggingItemAt(movedPoint);
+      graph.scatterPoints.startDraggingItemAt(movedPoint, false);
       moveAndUpdate(movedPoint, points);
     };
     const onMouseMove = function (movedPoint: PointT, points: Array<PointT>) {
@@ -46,9 +46,12 @@ const GraphScatterPointsUtil = {
       moveAndUpdate(movedPoint, points);
       graph.scatterPoints.stopDraggingItem();
     };
-
+    const onKeyDown = function(point: PointT, points: Array<PointT>) {
+      graph.scatterPoints.startDraggingItemAt(point, true);
+      moveAndUpdate(point, points);
+    };
     if (graphSettings.canInteract)
-      graph.scatterPoints.setDraggable(onMouseDown, onMouseMove, onMouseUp);
+      graph.scatterPoints.setDraggable(onMouseDown, onMouseMove, onMouseUp, onKeyDown);
   },
 };
 
