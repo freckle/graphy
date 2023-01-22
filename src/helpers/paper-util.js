@@ -2,7 +2,8 @@
 
 import paper from 'paper'
 import _ from 'lodash'
-import map from 'lodash/map'
+import forEach from 'lodash/forEach'
+import find from 'lodash/find'
 
 export type GraphTypeT =
   | "linear"
@@ -231,20 +232,23 @@ const PaperUtil = {
 
       // Provide keyboard accessible buttons for each
       // dragable coordinate point on the graph
-      map(graphSettings.startingPoints, (p, index) => {
+      forEach(graphSettings.startingPoints, (p, index) => {
         const controlButton = document.createElement('button')
         const id = `control-button-${index}`
         controlButton.id = id
         controlButton.innerText = `Coordinate ${index + 1}`
         canvas.appendChild(controlButton)
         const paperCenterPoint = this.fromGridCoordinateToView(p)
+        // round-robin colors
+        const color = graphSettings.pointColors[index % graphSettings.pointColors.length]
         const circle = createCircle(
           paperCenterPoint, 
           graphSettings.pointSize, 
-          graphSettings.pointColors[index],
+          color,
           id
         )
         if(graphType === 'quadratic' && index === 0) {
+          // first point in a quadratic graph is the vertex
           this.groups['vertex'].addChild(circle)
         } else {
           this.groups['points'].addChild(circle)
@@ -253,6 +257,24 @@ const PaperUtil = {
 
       paper.view.draw()
       return this
+    }
+
+    this.checkFocusOnStartingPoints = () => {
+      const target = document.activeElement
+      const targetId = target ? target.id : null
+      const focusedPath = find(this.groups.points.children, c => c.data.id === targetId)
+
+      forEach(this.groups.points.children, path => path.set({
+        strokeColor: undefined,
+        strokeWidth: 0
+      }))
+
+      if(focusedPath !== null && focusedPath !== undefined) {
+        focusedPath.set({
+          strokeColor: 'black',
+          strokeWidth: 1
+        })
+      }
     }
 
     this.destroy = () => {
@@ -290,6 +312,9 @@ const PaperUtil = {
           this.onMouseUp = null
         }
       }
+
+      document.removeEventListener('focus', this.checkFocusOnStartingPoints, true);
+      document.removeEventListener('blur', this.checkFocusOnStartingPoints, true);
     }
 
     this.setDraggable = (onMouseDown, onMouseDrag, onMouseUp) => {
@@ -297,6 +322,10 @@ const PaperUtil = {
       this.pointsTool.on('mousedown', this.onMouseDown = onMouseDown)
       this.pointsTool.on('mousedrag', this.onMouseDrag = onMouseDrag)
       this.pointsTool.on('mouseup', this.onMouseUp = onMouseUp)
+
+      // Listen to focus 
+      document.addEventListener('focus', this.checkFocusOnStartingPoints, true);
+      document.addEventListener('blur', this.checkFocusOnStartingPoints, true);
     }
 
     // Make the conversion from Grid coordinates to view coordinates
