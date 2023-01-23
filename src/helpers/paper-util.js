@@ -28,6 +28,8 @@ export type AnchorT
   | 'right'
   | 'top'
 
+export const ANNOUNCEMENT_NODE_ID = 'canvas-announcement'
+
 import
   { isPointBelowFunction
   , isPointCloseToFunction
@@ -184,6 +186,11 @@ const fromViewCoordinateToGrid = function(view: any, viewPoint: PaperPointT, gra
   )
 }
 
+function speakPoint(point: PointT): string {
+  const {x, y} = point
+  return `${Math.round(x)}, ${Math.round(y)}`
+}
+
 type GroupKeyT
   = 'grid'
   | 'points'
@@ -230,13 +237,16 @@ const PaperUtil = {
       this.pointsTool = new paper.Tool(pointsGroup)
       this.pointsTool.activate()
 
+      // used for aria-live announcements
+      this.announcementNode = document.getElementById(ANNOUNCEMENT_NODE_ID)
+
       // Provide keyboard accessible buttons for each
       // dragable coordinate point on the graph
       forEach(graphSettings.startingPoints, (p, index) => {
         const controlButton = document.createElement('button')
         const id = `control-button-${index}`
         controlButton.id = id
-        controlButton.innerText = `Coordinate ${index + 1}`
+        controlButton.innerText = `Coordinates ${speakPoint(p)}.`
         canvas.appendChild(controlButton)
         const paperCenterPoint = this.fromGridCoordinateToView(p)
         // round-robin colors
@@ -572,6 +582,7 @@ const PaperUtil = {
 
       moveDraggedItemAt: (point: PointT): boolean => {
         if (this.draggedItem) {
+          this.announcementNode.innerText = `Moved from coordinates (${speakPoint(this.fromViewCoordinateToGrid(this.draggedItem.position))}), to, coordinates ${speakPoint(point)}.`
           const paperPoint = this.fromGridCoordinateToView(point)
           this.draggedItem.position = paperPoint
           return true
