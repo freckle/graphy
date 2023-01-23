@@ -8,10 +8,10 @@ import GraphUtil from "./helpers/graph-util.js";
 import type {
   GraphSettingsT,
   PointT,
-  GraphTypeT,
   GraphPropertiesT,
   InequalityT,
 } from "./helpers/graph-util.js";
+import {type GraphTypeT, ANNOUNCEMENT_NODE_ID} from './helpers/paper-util'
 import { fromMaybe, fromMaybeNonEmpty } from "./helpers/maybe-helper.js";
 
 const defaultMinGridX = -10;
@@ -196,9 +196,10 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
       <canvas
         ref={(element) => (this.canvas = element)}
         className="graph-canvas"
+        width="400" height="400"
         {...ariaDescribedbyAttr}
       >
-        {" "}
+        <div id={ANNOUNCEMENT_NODE_ID} aria-live="assertive"></div>
       </canvas>
     );
   }

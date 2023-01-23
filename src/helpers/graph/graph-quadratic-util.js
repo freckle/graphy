@@ -1,6 +1,4 @@
 /* @flow */
-
-import { getArrayOfNElements } from "./../array-helper.js";
 import { getClosestStepPoint } from "./../graph-util.js";
 
 import type {
@@ -19,23 +17,6 @@ const GraphQuadraticUtil = {
     ) => void,
     graphSettings: GraphSettingsT
   ) {
-    const [vertexColor, pointColor] = getArrayOfNElements(
-      graphSettings.pointColors,
-      2
-    );
-    graph.createCircle(
-      "vertex",
-      graphSettings.startingPoints[0],
-      graphSettings.pointSize,
-      vertexColor
-    );
-    graph.createCircle(
-      "point",
-      graphSettings.startingPoints[1],
-      graphSettings.pointSize,
-      pointColor
-    );
-
     graph.quadraticEquation.updateFunction();
 
     const moveAndUpdate = function (
@@ -61,7 +42,7 @@ const GraphQuadraticUtil = {
       point: PointT,
       points: QuadraticGraphPropertyT
     ) {
-      graph.quadraticEquation.startDraggingItemAt(point);
+      graph.quadraticEquation.startDraggingItemAt(point, false);
       moveAndUpdate(point, points);
     };
     const onMouseMove = function (
@@ -77,9 +58,13 @@ const GraphQuadraticUtil = {
       moveAndUpdate(point, points);
       graph.quadraticEquation.stopDraggingItem();
     };
+    const onKeyDown = function(point: PointT, points: QuadraticGraphPropertyT) {
+      graph.quadraticEquation.startDraggingItemAt(point, true);
+      moveAndUpdate(point, points);
+    };
 
     if (graphSettings.canInteract)
-      graph.quadraticEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp);
+      graph.quadraticEquation.setDraggable(onMouseDown, onMouseMove, onMouseUp, onKeyDown);
   },
 };
 

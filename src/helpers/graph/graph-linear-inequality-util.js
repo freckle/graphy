@@ -2,7 +2,6 @@
 
 import _ from "lodash";
 
-import { getArrayOfNElements } from "./../array-helper.js";
 import { getClosestStepPoint } from "./../graph-util.js";
 
 import type {
@@ -21,22 +20,6 @@ const GraphLinearInequalityUtil = {
     ) => void,
     graphSettings: GraphSettingsT
   ) {
-    const [point1Color, point2Color] = getArrayOfNElements(
-      graphSettings.pointColors,
-      2
-    );
-    graph.createCircle(
-      "points",
-      graphSettings.startingPoints[0],
-      graphSettings.pointSize,
-      point1Color
-    );
-    graph.createCircle(
-      "points",
-      graphSettings.startingPoints[1],
-      graphSettings.pointSize,
-      point2Color
-    );
     if (!graphSettings.inequality) {
       throw new Error(
         "GraphLinearInequalityUtil.createGraph: graphSettings doesn't contain inequality property"
@@ -73,7 +56,7 @@ const GraphLinearInequalityUtil = {
       points: Array<PointT>,
       inequality: InequalityT
     ) {
-      graph.linearEquationInequality.startDraggingItemAt(movedPoint);
+      graph.linearEquationInequality.startDraggingItemAt(movedPoint, false);
       moveAndUpdate(movedPoint, points, inequality, true);
     };
 
@@ -94,11 +77,21 @@ const GraphLinearInequalityUtil = {
       graph.linearEquationInequality.stopDraggingItem();
     };
 
+    const onKeyDown = function(
+      point: PointT, 
+      points: Array<PointT>, 
+      inequality: InequalityT
+    ) {
+      graph.linearEquationInequality.startDraggingItemAt(point, true);
+      moveAndUpdate(point, points, inequality, true);
+    }
+
     if (graphSettings.canInteract)
       graph.linearEquationInequality.setDraggable(
         onMouseDown,
         onMouseMove,
-        onMouseUp
+        onMouseUp,
+        onKeyDown
       );
   },
 };

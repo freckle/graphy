@@ -2,7 +2,6 @@
 
 import _ from "lodash";
 
-import { getArrayOfNElements } from "./../array-helper.js";
 import { getClosestStepPoint } from "./../graph-util.js";
 
 import type {
@@ -20,23 +19,6 @@ const GraphExponentialUtil = {
     ) => void,
     graphSettings: GraphSettingsT
   ) {
-    const [point1Color, point2Color] = getArrayOfNElements(
-      graphSettings.pointColors,
-      2
-    );
-    graph.createCircle(
-      "points",
-      graphSettings.startingPoints[0],
-      graphSettings.pointSize,
-      point1Color
-    );
-    graph.createCircle(
-      "points",
-      graphSettings.startingPoints[1],
-      graphSettings.pointSize,
-      point2Color
-    );
-
     graph.exponentialEquation.updateFunction();
 
     const moveAndUpdate = function (movedPoint: PointT, points: Array<PointT>) {
@@ -56,7 +38,7 @@ const GraphExponentialUtil = {
     };
 
     const onMouseDown = function (point: PointT, points: Array<PointT>) {
-      graph.exponentialEquation.startDraggingItemAt(point);
+      graph.exponentialEquation.startDraggingItemAt(point, false);
       moveAndUpdate(point, points);
     };
     const onMouseMove = function (point: PointT, points: Array<PointT>) {
@@ -66,12 +48,17 @@ const GraphExponentialUtil = {
       moveAndUpdate(point, points);
       graph.exponentialEquation.stopDraggingItem();
     };
+    const onKeyDown = function(point: PointT, points: Array<PointT>) {
+      graph.exponentialEquation.startDraggingItemAt(point, true);
+      moveAndUpdate(point, points);
+    }
 
     if (graphSettings.canInteract)
       graph.exponentialEquation.setDraggable(
         onMouseDown,
         onMouseMove,
-        onMouseUp
+        onMouseUp,
+        onKeyDown
       );
   },
 };

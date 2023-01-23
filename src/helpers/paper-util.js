@@ -2,6 +2,16 @@
 
 import paper from 'paper'
 import _ from 'lodash'
+import forEach from 'lodash/forEach'
+import find from 'lodash/find'
+
+export type GraphTypeT =
+  | "linear"
+  | "linear-inequality"
+  | "quadratic"
+  | "exponential"
+  | "scatter-points"
+  | "empty";
 
 export type PaperPointT =
   { x: number
@@ -17,6 +27,8 @@ export type AnchorT
   | 'bottom'
   | 'right'
   | 'top'
+
+export const ANNOUNCEMENT_NODE_ID = 'canvas-announcement'
 
 import
   { isPointBelowFunction
@@ -106,11 +118,13 @@ const createTick = function(point: PointT, axis: AxisT): any {
   return rect
 }
 
-const createCircle = function(center: PointT, radius: number, fillColor: string): any {
+const createCircle = function(center: PointT, radius: number, fillColor: string, id?: ?string): any {
+  const idAttr = id !== null && id !== undefined ? {id} : {}
   return new paper.Path.Circle(
     { center
     , radius
     , fillColor
+    , data: {...idAttr}
     }
   )
 }
@@ -172,6 +186,11 @@ const fromViewCoordinateToGrid = function(view: any, viewPoint: PaperPointT, gra
   )
 }
 
+function speakPoint(point: PointT): string {
+  const {x, y} = point
+  return `${Math.round(x)}, ${Math.round(y)}`
+}
+
 type GroupKeyT
   = 'grid'
   | 'points'
@@ -183,7 +202,7 @@ type GroupKeyT
   | 'label'
 
 const PaperUtil = {
-  setupGraph: function(canvas: any, graphSettings: GraphSettingsT): any {
+  setupGraph: function(canvas: HTMLCanvasElement, graphSettings: GraphSettingsT, graphType: GraphTypeT): any {
     const initialize = (): any => {
       // Save initial canvas state (restore in destroy())
       // We do this because on some version of Chrome for Mac OS X, paper.js seems
@@ -218,8 +237,64 @@ const PaperUtil = {
       this.pointsTool = new paper.Tool(pointsGroup)
       this.pointsTool.activate()
 
+      // used for aria-live announcements
+      this.announcementNode = document.getElementById(ANNOUNCEMENT_NODE_ID)
+
+      // Provide keyboard accessible buttons for each
+      // dragable coordinate point on the graph
+      forEach(graphSettings.startingPoints, (p, index) => {
+        const controlButton = document.createElement('button')
+        const id = `control-button-${index}`
+        controlButton.id = id
+        controlButton.innerText = `Coordinates ${speakPoint(p)}.`
+        canvas.appendChild(controlButton)
+        const paperCenterPoint = this.fromGridCoordinateToView(p)
+        // round-robin colors
+        const color = graphSettings.pointColors[index % graphSettings.pointColors.length]
+        const circle = createCircle(
+          paperCenterPoint, 
+          graphSettings.pointSize, 
+          color,
+          id
+        )
+        if(graphType === 'quadratic' && index === 0) {
+          // first point in a quadratic graph is the vertex
+          this.groups.vertex.addChild(circle)
+        } else {
+          this.groups.points.addChild(circle)
+        }
+      })
+
       paper.view.draw()
       return this
+    }
+
+    this.getFocusedStartingPoint = () => {
+      const target = document.activeElement
+      const targetId = target ? target.id : null
+      const focusedPath = find([
+        ...this.groups.points.children,
+        ...this.groups.vertex.children
+      ], c => c.data.id === targetId)
+      return focusedPath
+    }
+
+    this.checkFocusOnStartingPoints = () => {
+      const focusedPath = this.getFocusedStartingPoint()
+
+      forEach(this.groups.points.children, path => path.set({
+        strokeColor: undefined,
+        strokeWidth: 0,
+        scale: 1
+      }))
+
+      if(focusedPath !== null && focusedPath !== undefined) {
+        focusedPath.set({
+          strokeColor: 'black',
+          strokeWidth: 2,
+          scale: 1.5
+        })
+      }
     }
 
     this.destroy = () => {
@@ -256,14 +331,26 @@ const PaperUtil = {
           this.pointsTool.off('mouseup', this.onMouseUp)
           this.onMouseUp = null
         }
+        if (this.onKeyDown) {
+          this.pointsTool.off('keydown', this.onKeyDown)
+          this.onKeyDown = null
+        }
       }
+
+      document.removeEventListener('focus', this.checkFocusOnStartingPoints, true);
+      document.removeEventListener('blur', this.checkFocusOnStartingPoints, true);
     }
 
-    this.setDraggable = (onMouseDown, onMouseDrag, onMouseUp) => {
+    this.setDraggable = (onMouseDown, onMouseDrag, onMouseUp, onKeyDown) => {
       this.removeHandlers()
       this.pointsTool.on('mousedown', this.onMouseDown = onMouseDown)
       this.pointsTool.on('mousedrag', this.onMouseDrag = onMouseDrag)
       this.pointsTool.on('mouseup', this.onMouseUp = onMouseUp)
+      this.pointsTool.on('keydown', this.onKeyDown = onKeyDown)
+
+      // Listen to focus 
+      document.addEventListener('focus', this.checkFocusOnStartingPoints, true);
+      document.addEventListener('blur', this.checkFocusOnStartingPoints, true);
     }
 
     // Make the conversion from Grid coordinates to view coordinates
@@ -352,6 +439,45 @@ const PaperUtil = {
       func(inGridBoundsPoint, ...args)
     }
 
+    this.getTargetPointForKeyboardEvent = (event) => {
+      const focusedPath = this.getFocusedStartingPoint()
+      const ALLOWED_KEYS = ['up', 'down', 'left', 'right']
+      if(focusedPath !== null && focusedPath !== undefined && ALLOWED_KEYS.includes(event.key)) {
+        const gridPoint = this.fromViewCoordinateToGrid(focusedPath.position)
+        const targetPoint = (() => {
+          switch(event.key) {
+            case 'up':
+              return {
+                ...gridPoint,
+                x: gridPoint.x,
+                y:  gridPoint.y + graphSettings.stepY
+              }
+            case 'down':
+              return {
+                ...gridPoint,
+                x: gridPoint.x,
+                y:  gridPoint.y - graphSettings.stepY
+              }
+            case 'left':
+              return {
+                ...gridPoint,
+                x: gridPoint.x - graphSettings.stepX,
+                y:  gridPoint.y
+              }
+            case 'right':
+              return {
+                ...gridPoint,
+                x: gridPoint.x + graphSettings.stepX,
+                y:  gridPoint.y
+              }
+            default:
+              return gridPoint
+          }
+        })()
+        return getClosestInGridPoint(paper.view, targetPoint, graphSettings)
+      }
+    }
+
     this.linearEquation = {
 
       updateFunction: () => {
@@ -362,7 +488,7 @@ const PaperUtil = {
         this.traceCurve('curve', fn, minGridX, maxGridX, stepX, 'blue')
       },
 
-      setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
+      setDraggable: (onMouseDown, onMouseDrag, onMouseUp, onKeyDown) => {
         this.setDraggable(
           event => {
             this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'))
@@ -372,13 +498,23 @@ const PaperUtil = {
           },
           event => {
             this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'))
+          },
+          event => {
+            const targetPoint = this.getTargetPointForKeyboardEvent(event)
+            if(targetPoint) {
+              onKeyDown(targetPoint, this.getAllPointsInGroup('points'))
+            }
           }
         )
       },
 
-      startDraggingItemAt: (point: PointT) => {
-        const paperPoint = this.fromGridCoordinateToView(point)
-        this.draggedItem = pickClosestItem(paperPoint, [this.groups['points']])
+      startDraggingItemAt: (point: PointT, isKeyboardEvent: boolean) => {
+        if(isKeyboardEvent) {
+          this.draggedItem = this.getFocusedStartingPoint()
+        } else {
+          const paperPoint = this.fromGridCoordinateToView(point)
+          this.draggedItem = pickClosestItem(paperPoint, [this.groups['points']])
+        }
       },
 
       moveDraggedItemAt: (point: PointT): boolean => {
@@ -410,12 +546,12 @@ const PaperUtil = {
       getVertexAndPoint: () => {
         return (
           { vertex: this.getAllPointsInGroup('vertex')[0]
-          , point: this.getAllPointsInGroup('point')[0]
+          , point: this.getAllPointsInGroup('points')[0]
           }
         )
       },
 
-      setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
+      setDraggable: (onMouseDown, onMouseDrag, onMouseUp, onKeyDown) => {
         this.setDraggable(
           event => {
             this.callFuncWithConvertedPoint(onMouseDown, event.point, this.quadraticEquation.getVertexAndPoint())
@@ -425,17 +561,28 @@ const PaperUtil = {
           },
           event => {
             this.callFuncWithConvertedPoint(onMouseUp, event.point, this.quadraticEquation.getVertexAndPoint())
+          },
+          event => {
+            const targetPoint = this.getTargetPointForKeyboardEvent(event)
+            if(targetPoint) {
+              onKeyDown(targetPoint, this.quadraticEquation.getVertexAndPoint())
+            }
           }
         )
       },
 
-      startDraggingItemAt: (point: PointT) => {
-        const paperPoint = this.fromGridCoordinateToView(point)
-        this.draggedItem = pickClosestItem(paperPoint, [this.groups['vertex'], this.groups['point']])
+      startDraggingItemAt: (point: PointT, isKeyboardEvent: boolean) => {
+        if(isKeyboardEvent) {
+          this.draggedItem = this.getFocusedStartingPoint()
+        } else {
+          const paperPoint = this.fromGridCoordinateToView(point)
+          this.draggedItem = pickClosestItem(paperPoint, [this.groups['vertex'], this.groups['points']])
+        }
       },
 
       moveDraggedItemAt: (point: PointT): boolean => {
         if (this.draggedItem) {
+          this.announcementNode.innerText = `Moved from coordinates (${speakPoint(this.fromViewCoordinateToGrid(this.draggedItem.position))}), to, coordinates ${speakPoint(point)}.`
           const paperPoint = this.fromGridCoordinateToView(point)
           this.draggedItem.position = paperPoint
           return true
@@ -460,7 +607,7 @@ const PaperUtil = {
         this.traceCurve('curve', exponentialFunction, minGridX, maxGridX, stepX, 'blue')
       },
 
-      setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
+      setDraggable: (onMouseDown, onMouseDrag, onMouseUp, onKeyDown) => {
         this.setDraggable(
           event => {
             this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'))
@@ -470,13 +617,23 @@ const PaperUtil = {
           },
           event => {
             this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'))
+          },
+          event => {
+              const targetPoint = this.getTargetPointForKeyboardEvent(event)
+              if(targetPoint) {
+                onKeyDown(targetPoint, this.getAllPointsInGroup('points'))
+              }
           }
         )
       },
 
-      startDraggingItemAt: (point: PointT) => {
-        const paperPoint = this.fromGridCoordinateToView(point)
-        this.draggedItem = pickClosestItem(paperPoint, [this.groups['points']])
+      startDraggingItemAt: (point: PointT, isKeyboardEvent: boolean) => {
+        if(isKeyboardEvent) {
+          this.draggedItem = this.getFocusedStartingPoint()
+        } else {
+          const paperPoint = this.fromGridCoordinateToView(point)
+          this.draggedItem = pickClosestItem(paperPoint, [this.groups['points']])
+        }
       },
 
       moveDraggedItemAt: (point: PointT): boolean => {
@@ -505,7 +662,7 @@ const PaperUtil = {
 
     this.scatterPoints = {
 
-      setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
+      setDraggable: (onMouseDown, onMouseDrag, onMouseUp, onKeyDown) => {
         this.setDraggable(
           event => {
             this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'))
@@ -515,13 +672,23 @@ const PaperUtil = {
           },
           event => {
             this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'))
-          }
+          },
+          event => {
+            const targetPoint = this.getTargetPointForKeyboardEvent(event)
+            if(targetPoint) {
+              onKeyDown(targetPoint, this.getAllPointsInGroup('points'))
+            }
+          },
         )
       },
 
-      startDraggingItemAt: (point: PointT) => {
-        const paperPoint = this.fromGridCoordinateToView(point)
-        this.draggedItem = pickClosestItem(paperPoint, [this.groups['points']])
+      startDraggingItemAt: (point: PointT, isKeyboardEvent: boolean) => {
+        if(isKeyboardEvent) {
+          this.draggedItem = this.getFocusedStartingPoint()
+        } else {
+          const paperPoint = this.fromGridCoordinateToView(point)
+          this.draggedItem = pickClosestItem(paperPoint, [this.groups['points']])
+        }
       },
 
       moveDraggedItemAt: (point: PointT): boolean => {
@@ -580,7 +747,7 @@ const PaperUtil = {
         this.createShape('inequality-side', shapePoints, new paper.Color(0, 1, 0, 0.1))
       },
 
-      setDraggable: (onMouseDown, onMouseDrag, onMouseUp) => {
+      setDraggable: (onMouseDown, onMouseDrag, onMouseUp, onKeyDown) => {
         this.setDraggable(
           event => {
             this.callFuncWithConvertedPoint(onMouseDown, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
@@ -590,30 +757,40 @@ const PaperUtil = {
           },
           event => {
             this.callFuncWithConvertedPoint(onMouseUp, event.point, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
-          }
+          },
+          event => {
+            const targetPoint = this.getTargetPointForKeyboardEvent(event)
+            if(targetPoint) {
+              onKeyDown(targetPoint, this.getAllPointsInGroup('points'), this.linearEquationInequality.inequality)
+            }
+          },
         )
       },
 
-      startDraggingItemAt: (point: PointT) => {
-        const paperPoint = this.fromGridCoordinateToView(point)
-        const item = pickClosestItem(paperPoint, [this.groups['points']])
-
-        const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
-        const fn = getLinearFunction(gridPoint1, gridPoint2)
-
-        if (item) {
-          // User click next to a point
-          this.draggedItem = item
-        } else if (isPointCloseToFunction(fn, point, graphSettings.stepY)) {
-          // Clicking on function
-          const newInequality = switchInequalityStrictness(this.linearEquationInequality.inequality)
-          this.linearEquationInequality.setInequality(newInequality)
-          this.linearEquationInequality.updateFunction()
+      startDraggingItemAt: (point: PointT, isKeyboardEvent: boolean) => {
+        if(isKeyboardEvent) {
+          this.draggedItem = this.getFocusedStartingPoint()
         } else {
-          const clickedLessThan = isPointBelowFunction(fn, point)
-          const newInequality = switchToOppositeInequality(this.linearEquationInequality.inequality, clickedLessThan)
-          this.linearEquationInequality.setInequality(newInequality)
-          this.linearEquationInequality.updateFunction()
+          const paperPoint = this.fromGridCoordinateToView(point)
+          const item = pickClosestItem(paperPoint, [this.groups['points']])
+
+          const [gridPoint1, gridPoint2] = this.getAllPointsInGroup('points')
+          const fn = getLinearFunction(gridPoint1, gridPoint2)
+
+          if (item) {
+            // User click next to a point
+            this.draggedItem = item
+          } else if (isPointCloseToFunction(fn, point, graphSettings.stepY)) {
+            // Clicking on function
+            const newInequality = switchInequalityStrictness(this.linearEquationInequality.inequality)
+            this.linearEquationInequality.setInequality(newInequality)
+            this.linearEquationInequality.updateFunction()
+          } else {
+            const clickedLessThan = isPointBelowFunction(fn, point)
+            const newInequality = switchToOppositeInequality(this.linearEquationInequality.inequality, clickedLessThan)
+            this.linearEquationInequality.setInequality(newInequality)
+            this.linearEquationInequality.updateFunction()
+          }
         }
       },
 
