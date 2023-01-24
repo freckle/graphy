@@ -247,6 +247,8 @@ const PaperUtil = {
         const id = `control-button-${index}`
         controlButton.id = id
         controlButton.innerText = `Coordinates ${speakPoint(p)}.`
+        // auto-switch to focus mode for screen-readers
+        controlButton.setAttribute('role', 'application')
         canvas.appendChild(controlButton)
         const paperCenterPoint = this.fromGridCoordinateToView(p)
         // round-robin colors
