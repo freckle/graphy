@@ -191,6 +191,14 @@ function speakPoint(point: PointT): string {
   return `${Math.round(x)}, ${Math.round(y)}`
 }
 
+function announce(text: string) {
+  // used for aria-live announcements
+  const node = document.getElementById(ANNOUNCEMENT_NODE_ID)
+  if(node) {
+    node.innerText = text
+  }
+}
+
 type GroupKeyT
   = 'grid'
   | 'points'
@@ -236,9 +244,6 @@ const PaperUtil = {
       this.groups['tick'] = new paper.Group()
       this.pointsTool = new paper.Tool(pointsGroup)
       this.pointsTool.activate()
-
-      // used for aria-live announcements
-      this.announcementNode = document.getElementById(ANNOUNCEMENT_NODE_ID)
 
       // Provide keyboard accessible buttons for each
       // dragable coordinate point on the graph
@@ -584,7 +589,7 @@ const PaperUtil = {
 
       moveDraggedItemAt: (point: PointT): boolean => {
         if (this.draggedItem) {
-          this.announcementNode.innerText = `Moved from coordinates (${speakPoint(this.fromViewCoordinateToGrid(this.draggedItem.position))}), to, coordinates ${speakPoint(point)}.`
+          announce(`Moved from coordinates (${speakPoint(this.fromViewCoordinateToGrid(this.draggedItem.position))}), to, coordinates ${speakPoint(point)}.`)
           const paperPoint = this.fromGridCoordinateToView(point)
           this.draggedItem.position = paperPoint
           return true
