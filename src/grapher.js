@@ -196,7 +196,6 @@ export default class Grapher extends React.Component<void, GrapherProps, void> {
       <canvas
         ref={(element) => (this.canvas = element)}
         className="graph-canvas"
-        width="400" height="400"
         {...ariaDescribedbyAttr}
       >
         <div id={ANNOUNCEMENT_NODE_ID} aria-live="assertive"></div>
